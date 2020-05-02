@@ -16,6 +16,7 @@ OUTPUT_FILE = $(OUTPUT_DIR)/sfs_c.o
 build: clean
 	mkdir $(OUTPUT_DIR)
 	gcc -Wall -o $(OUTPUT_FILE) $(MAIN_FILE)
+	$(OUTPUT_FILE)
 
 clean:
 	-rm -rf $(OUTPUT_DIR)

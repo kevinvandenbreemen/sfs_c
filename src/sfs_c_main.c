@@ -4,7 +4,7 @@
 
 int main(int argc, char const *argv[]) {
     
-    printf("SFS C Library v. \n");
+    printf("***********************\nSFS C Library v. %s\n***********************\n", SFS_C_VERISON);
     return 0;
 
 }
