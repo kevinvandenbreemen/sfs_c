@@ -1,6 +1,10 @@
 # VS Code Stuff
 .vscode
 
+# Output file
+./built
+runTests
+
 # Prerequisites
 *.d
 

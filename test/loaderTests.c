@@ -1,4 +1,5 @@
 #include <check.h>
+#include "../src/sfs_c.h"
 
 START_TEST(LoadAFile) {
 
