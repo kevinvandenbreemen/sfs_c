@@ -2,7 +2,7 @@
 #include "../src/sfs_c.h"
 
 START_TEST(LoadAFile) {
-    sfs_checkIsSFS("./resource/exampleSFS");
+    fail_if(sfs_checkIsSFS("./resource/exampleSFS") != 1, "Example SFS should have been recognized as an SFS file");
 }
 END_TEST
 
