@@ -2,7 +2,8 @@
 .vscode
 
 # Output file
-./built
+built
+**/built/**
 runTests
 
 # Prerequisites
