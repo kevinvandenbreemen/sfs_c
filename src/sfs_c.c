@@ -11,5 +11,7 @@ int sfs_checkIsSFS(char *filePath) {
         return -1;
     }
 
+    printf("Loaded the file %s\n", filePath);
+
     return 0;
 }
