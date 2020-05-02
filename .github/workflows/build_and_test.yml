@@ -12,6 +12,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Environment Setup
+      run: sudo apt-get update -y; sudo apt-get install -y check
     - uses: actions/checkout@v2
     - name: "Build and Test"
       run: make test
