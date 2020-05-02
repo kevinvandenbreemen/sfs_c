@@ -2,7 +2,7 @@
 #include "../src/sfs_c.h"
 
 START_TEST(LoadAFile) {
-
+    sfs_checkIsSFS("../resource/exampleSFS");
 }
 END_TEST
 
