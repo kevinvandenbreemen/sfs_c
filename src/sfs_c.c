@@ -33,3 +33,9 @@ int sfs_checkIsSFS(char *filePath) {
 
     return 0;
 }
+
+ChunkedFile *sfs_createChunkedFile(char *location) {
+
+    return NULL;
+
+}

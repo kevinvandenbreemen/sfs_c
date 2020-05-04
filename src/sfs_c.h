@@ -10,4 +10,21 @@
  */
 int sfs_checkIsSFS(char *filePath);
 
+/**
+ * Stores/reads "chunks" of bytes to and from a file
+ */
+typedef struct ChunkedFile {
+
+    /**
+     * path to the file on the file system
+     */
+    char *location;
+
+} ChunkedFile;
+
+/**
+ * Load/create chunked file at the given location
+ */
+ChunkedFile *sfs_createChunkedFile(char *location);
+
 #endif

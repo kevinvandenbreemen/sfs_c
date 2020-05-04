@@ -8,6 +8,7 @@ OBJ_FILE = ./sfs_c.o
 TEST_DIR = ./test
 TEST_FILE = $(TEST_DIR)/loaderTests.c
 TEST_EXE = ./runTests
+TEST_OUT = ./testOutput
 
 # Outputs
 OUTPUT_DIR = ./built
@@ -23,7 +24,9 @@ build: clean
 
 clean:
 	-rm -rf $(OUTPUT_DIR)
+	-rm -rf $(TEST_OUT)
 
 test: build
 	gcc $(TEST_FILE) -Wall -o $(TEST_EXE) $(OBJ_FILE) -lcheck -lm -lpthread -lrt  -lm -lsubunit
+	@mkdir $(TEST_OUT)
 	./runTests

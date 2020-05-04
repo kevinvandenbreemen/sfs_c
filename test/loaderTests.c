@@ -1,6 +1,8 @@
 #include <check.h>
 #include "../src/sfs_c.h"
 
+#define TEST_OUT "testOutput"
+
 START_TEST(LoadAFile) {
     fail_unless(sfs_checkIsSFS("./resource/exampleSFS") == 1, "Example SFS should have been recognized as an SFS file");
 }
@@ -11,9 +13,15 @@ START_TEST(NOT_AN_SFS) {
 }
 END_TEST
 
+START_TEST(CreateSFS) {
+    char *filePath = TEST_OUT;
+    fail_if(sfs_createChunkedFile(filePath) == NULL, "System should have created chunked file");
+}
+END_TEST
+
 int main(void)
 {
-    Suite *suite = suite_create("File Loading");
+    Suite *suite = suite_create("Chunked File Management");
     SRunner *runner = srunner_create(suite);
 
 
@@ -21,6 +29,10 @@ int main(void)
     tcase_add_test(case1, LoadAFile);
     tcase_add_test(case1, NOT_AN_SFS);
     suite_add_tcase(suite, case1);
+
+    TCase *createOpen = tcase_create("Create/Open");
+    tcase_add_test(createOpen, CreateSFS);
+    suite_add_tcase(suite, createOpen);
 
     srunner_run_all(runner, CK_ENV);
 
