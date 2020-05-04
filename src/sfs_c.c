@@ -2,6 +2,7 @@
 
 #include "sfs_c.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 /**
  * Standard signature of an SFS file.  This signature intended to make the file
@@ -36,6 +37,10 @@ int sfs_checkIsSFS(char *filePath) {
 
 ChunkedFile *sfs_createChunkedFile(char *location) {
 
-    return NULL;
+    //  Create the file
+    fopen(location, "w");
+    
+    ChunkedFile *ret = malloc(sizeof(ChunkedFile*));
+    return ret;
 
 }
