@@ -13,7 +13,7 @@ jobs:
 
     steps:
     - name: Environment Setup
-      run: sudo apt-get update -y; sudo apt-get install -y check
+      run: sudo apt-get update -y; sudo apt-get install -y check; sudo apt-get install -y valgrind
     - uses: actions/checkout@v2
     - name: "Unit Tests"
       run: make test
