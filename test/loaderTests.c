@@ -1,7 +1,9 @@
 #include <check.h>
 #include "../src/sfs_c.h"
+#include <unistd.h>
+#include <stdio.h>
 
-#define TEST_OUT "testOutput"
+#define TEST_FILE "testOutput/testFile"
 
 START_TEST(LoadAFile) {
     fail_unless(sfs_checkIsSFS("./resource/exampleSFS") == 1, "Example SFS should have been recognized as an SFS file");
@@ -14,8 +16,10 @@ START_TEST(NOT_AN_SFS) {
 END_TEST
 
 START_TEST(CreateSFS) {
-    char *filePath = TEST_OUT;
+    char *filePath = TEST_FILE;
     fail_if(sfs_createChunkedFile(filePath) == NULL, "System should have created chunked file");
+    
+    fail_if(access(filePath, F_OK));
 }
 END_TEST
 
