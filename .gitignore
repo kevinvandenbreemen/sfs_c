@@ -3,6 +3,7 @@
 
 core
 testOutput
+memCheck
 
 # Output file
 built
