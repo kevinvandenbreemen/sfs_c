@@ -15,5 +15,7 @@ jobs:
     - name: Environment Setup
       run: sudo apt-get update -y; sudo apt-get install -y check
     - uses: actions/checkout@v2
-    - name: "Build and Test"
+    - name: "Unit Tests"
       run: make test
+    - name: "Memory Leak Tests"
+      run: make memCheck
