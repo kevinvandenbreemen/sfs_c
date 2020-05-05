@@ -1,6 +1,9 @@
 # VS Code Stuff
 .vscode
 
+core
+testOutput
+
 # Output file
 built
 **/built/**
