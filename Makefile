@@ -9,12 +9,14 @@ TEST_DIR = ./test
 TEST_FILE = $(TEST_DIR)/loaderTests.c
 TEST_EXE = ./runTests
 TEST_OUT = ./testOutput
+PERF_TEST = $(TEST_DIR)/memCheck.c
+PERF_EXE = ./memCheck
 
 # Outputs
 OUTPUT_DIR = ./built
 OUTPUT_FILE = $(OUTPUT_DIR)/sfs_c_main
 
-.PHONY: clean build test
+.PHONY: clean build test memCheck
 
 build: clean
 	mkdir $(OUTPUT_DIR)
@@ -30,3 +32,8 @@ test: build
 	gcc $(TEST_FILE) -Wall -o $(TEST_EXE) $(OBJ_FILE) -lcheck -lm -lpthread -lrt  -lm -lsubunit
 	@mkdir $(TEST_OUT)
 	./runTests
+
+memCheck: build
+	gcc $(PERF_TEST) -Wall -g -o $(PERF_EXE) $(OBJ_COMPILE) -lcheck -lm -lpthread -lrt  -lm -lsubunit
+	@mkdir $(TEST_OUT)
+	valgrind --leak-check=yes --track-origins=yes $(PERF_EXE)
