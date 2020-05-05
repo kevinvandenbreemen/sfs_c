@@ -23,6 +23,12 @@ START_TEST(CreateSFS) {
 }
 END_TEST
 
+START_TEST(AddsSignatureToNewFile) {
+    char *filePath = TEST_FILE;
+    fail_if(sfs_checkIsSFS(filePath) != 1, "Newly-created file should be an SFS");
+}
+END_TEST
+
 int main(void)
 {
     Suite *suite = suite_create("Chunked File Management");
@@ -36,6 +42,7 @@ int main(void)
 
     TCase *createOpen = tcase_create("Create/Open");
     tcase_add_test(createOpen, CreateSFS);
+    tcase_add_test(createOpen, AddsSignatureToNewFile);
     suite_add_tcase(suite, createOpen);
 
     srunner_run_all(runner, CK_ENV);

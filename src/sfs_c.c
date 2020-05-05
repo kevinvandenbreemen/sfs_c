@@ -38,7 +38,11 @@ int sfs_checkIsSFS(char *filePath) {
 ChunkedFile *sfs_createChunkedFile(char *location) {
 
     //  Create the file
-    fopen(location, "w");
+    FILE *f = fopen(location, "w");
+    
+    //  Write the prefix bytes
+    char prefixBytes[6] = SFS_SIGNATURE;
+    fwrite(prefixBytes, sizeof(char), 6, f);
     
     ChunkedFile *ret = malloc(sizeof(ChunkedFile*));
     return ret;
