@@ -3,12 +3,19 @@
 #include "sfs_c.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 /**
  * Standard signature of an SFS file.  This signature intended to make the file
  * look like an NES ROM when it isn't (hence the 'just kidding' afterward)
  */
 #define SFS_SIGNATURE { 'N', 'E', 'S', 26, 'J', 'K' }
+#define SFS_SIGNATURE_LEN 6
+
+/**
+ * Maximum number of bytes available in the prefix (including the SFS signature)
+ */
+#define PREFIX_BYTE_LEN 256
 
 int sfs_checkIsSFS(char *filePath) {
 
@@ -45,6 +52,23 @@ ChunkedFile *sfs_createChunkedFile(char *location) {
     fwrite(prefixBytes, sizeof(char), 6, f);
     
     ChunkedFile *ret = malloc(sizeof(ChunkedFile*));
+    ret->location = location;
     return ret;
 
+}
+
+void sfs_setMessage(ChunkedFile *cf, char *message, int length) {
+
+    char *location = *(cf->location);
+
+    FILE *f = fopen(cf->location, "r+a");
+    if(f == NULL) {
+        fprintf(stderr, "Failed to open %s for writing\n", cf->location);
+        return;
+    }
+    int messageBytesLen = PREFIX_BYTE_LEN-SFS_SIGNATURE_LEN;
+    char msgBytes[messageBytesLen];
+    memcpy(msgBytes, message, length);
+    fseek(f, SFS_SIGNATURE_LEN, SEEK_SET);
+    fwrite(msgBytes, sizeof(char), messageBytesLen, f);
 }

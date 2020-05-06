@@ -27,4 +27,9 @@ typedef struct ChunkedFile {
  */
 ChunkedFile *sfs_createChunkedFile(char *location);
 
+/**
+ * Set the message bytes on this chunked file
+ */
+void sfs_setMessage(ChunkedFile *cf, char *message, int length);
+
 #endif

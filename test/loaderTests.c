@@ -17,7 +17,11 @@ END_TEST
 
 START_TEST(CreateSFS) {
     char *filePath = TEST_FILE;
-    fail_if(sfs_createChunkedFile(filePath) == NULL, "System should have created chunked file");
+
+    ChunkedFile *cf = sfs_createChunkedFile(filePath);
+
+    fail_if(cf == NULL, "System should have created chunked file");
+    fail_if(cf->location == NULL, "System should have set file location");
     
     fail_if(access(filePath, F_OK));
 }
@@ -26,6 +30,19 @@ END_TEST
 START_TEST(AddsSignatureToNewFile) {
     char *filePath = TEST_FILE;
     fail_if(sfs_checkIsSFS(filePath) != 1, "Newly-created file should be an SFS");
+}
+END_TEST
+
+START_TEST(AddsMessageToFile) {
+    char *filePath = TEST_FILE;
+    char msg[5] = {'h', 'e', 'l', 'l', 'o'};
+
+    ChunkedFile *cf = sfs_createChunkedFile(filePath);
+
+    sfs_setMessage(cf, msg, 5);
+
+    //char readMessage = sfs_getMessage(cf);
+
 }
 END_TEST
 
@@ -43,6 +60,7 @@ int main(void)
     TCase *createOpen = tcase_create("Create/Open");
     tcase_add_test(createOpen, CreateSFS);
     tcase_add_test(createOpen, AddsSignatureToNewFile);
+    tcase_add_test(createOpen, AddsMessageToFile);
     suite_add_tcase(suite, createOpen);
 
     srunner_run_all(runner, CK_ENV);
