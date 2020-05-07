@@ -84,13 +84,17 @@ static char* readBytesInternal(ChunkedFile *cf, long cursor, long numBytes) {
  */
 static int writeBytesInternal(ChunkedFile *cf, long cursor, char *bytes, long numBytes) {
 
-    FILE *f = fopen(cf->location, "ab+");
+    FILE *f = fopen(cf->location, "r+b");
     if(f == NULL) {
         fprintf(stderr, "Failed to open %s for writing\n", cf->location);
         return 1;
     }
 
-    fseek(f, cursor, SEEK_SET);
+    if(fseek(f, cursor, SEEK_SET) != 0){
+        fprintf(stderr, "Could not seek to position %d in file %s\n", cursor, cf->location);
+        return 1;
+    }
+
     fwrite(bytes, sizeof(char), numBytes, f);
     fclose(f);
 
@@ -127,8 +131,6 @@ void sfs_getMessage(ChunkedFile *cf) {
     }
     
     char *messagePayload = malloc(indexOf * sizeof(char));
-
-    printf("Scan through complete.  Copying %d bytes to final product\n", indexOf);
 
     memcpy(messagePayload, messageBytes, indexOf);   
     free(messageBytes);

@@ -49,11 +49,31 @@ START_TEST(AddsMessageToFile) {
 }
 END_TEST
 
+START_TEST(OverwriteMessageInFile) {
+    char *filePath = "testOutput/testFileMessage";
+    char msg[5] = {'h', 'e', 'l', 'l', 'o'};
+    char *updated = "NewMessage";
+
+    ChunkedFile *cf = sfs_createChunkedFile(filePath);
+
+    sfs_setMessage(cf, msg, 5);
+    sfs_getMessage(cf);
+
+    sfs_setMessage(cf, updated, 10);
+    sfs_getMessage(cf);
+
+    fail_if(cf->message == NULL, "System should have read in message");
+    fail_if(memcmp(updated, cf->message, sizeof(updated)) != 0, "Expected message not found");
+
+    fail_if(sfs_checkIsSFS(filePath) != 1, "Updated file should still be an SFS");
+
+}
+END_TEST
+
 int main(void)
 {
     Suite *suite = suite_create("Chunked File Management");
     SRunner *runner = srunner_create(suite);
-
 
     TCase *case1 = tcase_create("Basic Open");
     tcase_add_test(case1, LoadAFile);
@@ -64,6 +84,7 @@ int main(void)
     tcase_add_test(createOpen, CreateSFS);
     tcase_add_test(createOpen, AddsSignatureToNewFile);
     tcase_add_test(createOpen, AddsMessageToFile);
+    tcase_add_test(createOpen, OverwriteMessageInFile);
     suite_add_tcase(suite, createOpen);
 
     srunner_run_all(runner, CK_ENV);

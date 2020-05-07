@@ -10,6 +10,7 @@ int main(int argc, char const *argv[])
 
     char message[8] = {'p','e','r','f','t','e','s','t'};
     sfs_setMessage(cf, message, 8);
+    sfs_setMessage(cf, "Some other message", 18);
 
     //  Cleanup
     free(cf);
