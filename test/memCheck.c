@@ -9,7 +9,7 @@ int main(int argc, char const *argv[])
     ChunkedFile *cf = sfs_createChunkedFile(filePath);
 
     char message[8] = {'p','e','r','f','t','e','s','t'};
-    //sfs_setMessage(cf, message, 8);
+    sfs_setMessage(cf, message, 8);
 
     //  Cleanup
     free(cf);
