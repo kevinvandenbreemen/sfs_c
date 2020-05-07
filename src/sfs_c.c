@@ -60,6 +60,24 @@ ChunkedFile *sfs_createChunkedFile(char *location) {
 
 }
 
+/**
+ * Read in the given number of bytes from the given position in the ChunkedFile
+ */
+static char* readBytesInternal(ChunkedFile *cf, long cursor, long numBytes) {
+    FILE *f = fopen(cf->location, "r");
+    if(f == NULL) {
+        fprintf(stderr, "Failed to open %s for writing\n", cf->location);
+        return NULL;
+    }
+
+    char *messageBytes = malloc(numBytes * sizeof(char));
+    fseek(f, cursor, SEEK_SET);
+    fread(messageBytes, sizeof(char), (numBytes), f);
+    fclose(f);
+
+    return messageBytes;
+}
+
 void sfs_setMessage(ChunkedFile *cf, char *message, int length) {
 
     FILE *f = fopen(cf->location, "ab+");
@@ -82,16 +100,11 @@ void sfs_setMessage(ChunkedFile *cf, char *message, int length) {
 
 void sfs_getMessage(ChunkedFile *cf) {
 
-    FILE *f = fopen(cf->location, "r");
-    if(f == NULL) {
-        fprintf(stderr, "Failed to open %s for writing\n", cf->location);
+    int length = PREFIX_BYTE_LEN - SFS_SIGNATURE_LEN;
+    char *messageBytes = readBytesInternal(cf, SFS_SIGNATURE_LEN, length);
+    if(messageBytes == NULL) {
         return;
     }
-
-    int length = PREFIX_BYTE_LEN - SFS_SIGNATURE_LEN;
-    char messageBytes[length];
-    fseek(f, SFS_SIGNATURE_LEN, SEEK_SET);
-    fread(messageBytes, sizeof(char), (length), f);
 
     int indexOf = -1;
     int i = 0;
@@ -107,6 +120,7 @@ void sfs_getMessage(ChunkedFile *cf) {
     printf("Scan through complete.  Copying %d bytes to final product\n", indexOf);
 
     memcpy(messagePayload, messageBytes, indexOf);   
+    free(messageBytes);
 
     cf->message = messagePayload;
     cf->messageLength = indexOf;

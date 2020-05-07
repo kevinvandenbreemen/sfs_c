@@ -36,4 +36,4 @@ test: build
 memCheck: build
 	gcc $(PERF_TEST) -Wall -g -o $(PERF_EXE) $(OBJ_COMPILE) -lcheck -lm -lpthread -lrt  -lm -lsubunit
 	@mkdir $(TEST_OUT)
-	valgrind --leak-check=yes --track-origins=yes $(PERF_EXE)
+	valgrind -s --leak-check=yes --track-origins=yes $(PERF_EXE)
