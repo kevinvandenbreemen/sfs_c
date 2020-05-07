@@ -69,6 +69,8 @@ void sfs_setMessage(ChunkedFile *cf, char *message, int length) {
     }
     int messageBytesLen = PREFIX_BYTE_LEN-SFS_SIGNATURE_LEN;
     char msgBytes[messageBytesLen];
+    memset(msgBytes, 0, messageBytesLen);
+
     memcpy(msgBytes, message, length);
 
     msgBytes[length] = (char)SFS_CTRL_END_OF_HEADER;
@@ -100,7 +102,6 @@ void sfs_getMessage(ChunkedFile *cf) {
         }
     }
     
-
     char *messagePayload = malloc(indexOf * sizeof(char));
 
     printf("Scan through complete.  Copying %d bytes to final product\n", indexOf);
