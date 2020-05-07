@@ -78,24 +78,35 @@ static char* readBytesInternal(ChunkedFile *cf, long cursor, long numBytes) {
     return messageBytes;
 }
 
-void sfs_setMessage(ChunkedFile *cf, char *message, int length) {
+/**
+ * Writes the given bytes to the given file at the given position.
+ * Returns 0 if successful.
+ */
+static int writeBytesInternal(ChunkedFile *cf, long cursor, char *bytes, long numBytes) {
 
     FILE *f = fopen(cf->location, "ab+");
     if(f == NULL) {
         fprintf(stderr, "Failed to open %s for writing\n", cf->location);
-        return;
+        return 1;
     }
+
+    fseek(f, cursor, SEEK_SET);
+    fwrite(bytes, sizeof(char), numBytes, f);
+    fclose(f);
+
+    return 0;
+}
+
+void sfs_setMessage(ChunkedFile *cf, char *message, int length) {
+
     int messageBytesLen = PREFIX_BYTE_LEN-SFS_SIGNATURE_LEN;
     char msgBytes[messageBytesLen];
     memset(msgBytes, 0, messageBytesLen);
-
     memcpy(msgBytes, message, length);
 
     msgBytes[length] = (char)SFS_CTRL_END_OF_HEADER;
 
-    fseek(f, SFS_SIGNATURE_LEN, SEEK_SET);
-    fwrite(msgBytes, sizeof(char), messageBytesLen, f);
-    fclose(f);
+    writeBytesInternal(cf, SFS_SIGNATURE_LEN, msgBytes, messageBytesLen);
 }
 
 void sfs_getMessage(ChunkedFile *cf) {
