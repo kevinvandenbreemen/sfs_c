@@ -91,7 +91,7 @@ static int writeBytesInternal(ChunkedFile *cf, long cursor, char *bytes, long nu
     }
 
     if(fseek(f, cursor, SEEK_SET) != 0){
-        fprintf(stderr, "Could not seek to position %d in file %s\n", cursor, cf->location);
+        fprintf(stderr, "Could not seek to position %ld in file %s\n", cursor, cf->location);
         return 1;
     }
 
