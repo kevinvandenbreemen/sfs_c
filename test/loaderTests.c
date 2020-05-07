@@ -34,14 +34,17 @@ START_TEST(AddsSignatureToNewFile) {
 END_TEST
 
 START_TEST(AddsMessageToFile) {
-    char *filePath = TEST_FILE;
+    char *filePath = "testOutput/testFileMessage";
     char msg[5] = {'h', 'e', 'l', 'l', 'o'};
 
     ChunkedFile *cf = sfs_createChunkedFile(filePath);
 
     sfs_setMessage(cf, msg, 5);
 
-    //char readMessage = sfs_getMessage(cf);
+    sfs_getMessage(cf);
+
+    fail_if(cf->message == NULL, "System should have read in message");
+    fail_if(memcmp(msg, cf->message, sizeof(msg)) != 0, "Expected message not found");
 
 }
 END_TEST

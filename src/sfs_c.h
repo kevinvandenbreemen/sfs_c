@@ -20,6 +20,16 @@ typedef struct ChunkedFile {
      */
     char *location;
 
+    /**
+     * File's message
+     */
+    char *message;
+
+    /**
+     * Number of bytes in file's message
+     */
+    int messageLength;
+
 } ChunkedFile;
 
 /**
@@ -31,5 +41,10 @@ ChunkedFile *sfs_createChunkedFile(char *location);
  * Set the message bytes on this chunked file
  */
 void sfs_setMessage(ChunkedFile *cf, char *message, int length);
+
+/**
+ * Get the message at the beginning of the file
+ */
+void sfs_getMessage(ChunkedFile *cf);
 
 #endif

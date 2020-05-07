@@ -1,6 +1,8 @@
 //  Lib implementation
 
 #include "sfs_c.h"
+#include "sfs_control.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -45,11 +47,12 @@ int sfs_checkIsSFS(char *filePath) {
 ChunkedFile *sfs_createChunkedFile(char *location) {
 
     //  Create the file
-    FILE *f = fopen(location, "w");
+    FILE *f = fopen(location, "wb");
     
     //  Write the prefix bytes
     char prefixBytes[6] = SFS_SIGNATURE;
     fwrite(prefixBytes, sizeof(char), 6, f);
+    fclose(f);
     
     ChunkedFile *ret = malloc(sizeof(ChunkedFile*));
     ret->location = location;
@@ -59,9 +62,7 @@ ChunkedFile *sfs_createChunkedFile(char *location) {
 
 void sfs_setMessage(ChunkedFile *cf, char *message, int length) {
 
-    char *location = *(cf->location);
-
-    FILE *f = fopen(cf->location, "r+a");
+    FILE *f = fopen(cf->location, "ab+");
     if(f == NULL) {
         fprintf(stderr, "Failed to open %s for writing\n", cf->location);
         return;
@@ -69,6 +70,44 @@ void sfs_setMessage(ChunkedFile *cf, char *message, int length) {
     int messageBytesLen = PREFIX_BYTE_LEN-SFS_SIGNATURE_LEN;
     char msgBytes[messageBytesLen];
     memcpy(msgBytes, message, length);
+
+    msgBytes[length] = (char)SFS_CTRL_END_OF_HEADER;
+
     fseek(f, SFS_SIGNATURE_LEN, SEEK_SET);
     fwrite(msgBytes, sizeof(char), messageBytesLen, f);
+    fclose(f);
+}
+
+void sfs_getMessage(ChunkedFile *cf) {
+
+    FILE *f = fopen(cf->location, "r");
+    if(f == NULL) {
+        fprintf(stderr, "Failed to open %s for writing\n", cf->location);
+        return;
+    }
+
+    int length = PREFIX_BYTE_LEN - SFS_SIGNATURE_LEN;
+    char messageBytes[length];
+    fseek(f, SFS_SIGNATURE_LEN, SEEK_SET);
+    fread(messageBytes, sizeof(char), (length), f);
+
+    int indexOf = -1;
+    int i = 0;
+    for(i=0; i<length; i++) {
+        if(messageBytes[i] == (char)SFS_CTRL_END_OF_HEADER) {
+            indexOf = i;
+            break;
+        }
+    }
+    
+
+    char *messagePayload = malloc(indexOf * sizeof(char));
+
+    printf("Scan through complete.  Copying %d bytes to final product\n", indexOf);
+
+    memcpy(messagePayload, messageBytes, indexOf);   
+
+    cf->message = messagePayload;
+    cf->messageLength = indexOf;
+
 }
