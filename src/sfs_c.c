@@ -19,6 +19,11 @@
  */
 #define PREFIX_BYTE_LEN 256
 
+/**
+ * Default chunk size for SFS
+ */
+#define CHUNK_SIZE 160 * (3 * 1024)
+
 //  INTERNAL/static FUNCTIONS NOT TO BE CONSUMED BY OTHER MODULES
 //  =~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=
 
@@ -187,11 +192,33 @@ ChunkedFile *sfs_createChunkedFile(char *location) {
     
     ChunkedFile *ret = malloc(sizeof(ChunkedFile*));
     ret->location = location;
+    ret->unitSize = CHUNK_SIZE;
     return ret;
 
 }
 
+ChunkedFile *sfs_openChunkedFile(char *location) {
 
+    if(sfs_checkIsSFS(location) != 1){
+        fprintf(stderr, "File at '%s' is not a chunked file.  Cannot continue and will exit to prevent data corruption\n", location);
+        exit(1);
+    }
+
+    //  Load SFS
+    ChunkedFile *ret = malloc(sizeof(ChunkedFile*));
+    ret->location = location;
+    return ret;
+    
+}
+
+char *sfs_readChunk(ChunkedFile *chunkedFile, long long atIndex) {
+    //  Determine offset
+    long long index = 0;
+    index += (long long) PREFIX_BYTE_LEN;
+    index += (atIndex * chunkedFile->messageLength);
+
+    return readBytesInternal(chunkedFile, index, (long)chunkedFile->messageLength);
+}
 
 void sfs_setMessage(ChunkedFile *cf, char *message, int length) {
 

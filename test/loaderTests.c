@@ -70,6 +70,29 @@ START_TEST(OverwriteMessageInFile) {
 }
 END_TEST
 
+START_TEST(OpenChunkedFile) {
+
+    char *filePath = "resource/indexedFile";
+    ChunkedFile *cf = sfs_openChunkedFile(filePath);
+
+    fail_if(cf == NULL);
+
+}
+END_TEST
+
+START_TEST(ReadChunkFromFile) {
+
+    char *filePath = "resource/indexedFile";
+    ChunkedFile *cf = sfs_openChunkedFile(filePath);
+
+    //  This should read in the FAT table from the existing SFS
+    char *chunkData = sfs_readChunk(cf, 0);
+
+    fail_if(chunkData == NULL, "System did not read in chunk data");
+
+}
+END_TEST
+
 int main(void)
 {
     Suite *suite = suite_create("Chunked File Management");
@@ -85,6 +108,8 @@ int main(void)
     tcase_add_test(createOpen, AddsSignatureToNewFile);
     tcase_add_test(createOpen, AddsMessageToFile);
     tcase_add_test(createOpen, OverwriteMessageInFile);
+    tcase_add_test(createOpen, OpenChunkedFile);
+    tcase_add_test(createOpen, ReadChunkFromFile);
     suite_add_tcase(suite, createOpen);
 
     srunner_run_all(runner, CK_ENV);

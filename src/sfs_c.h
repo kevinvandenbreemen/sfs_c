@@ -30,12 +30,29 @@ typedef struct ChunkedFile {
      */
     int messageLength;
 
+    /**
+     * Unit size - the number of bytes to allocate inside
+     * each chunk stored to the file
+     */
+    int unitSize;
+
 } ChunkedFile;
 
 /**
- * Load/create chunked file at the given location
+ * Create chunked file at the given location.  Note that if you call this function
+ * with a file that already exists its contents will be overwritten!
  */
 ChunkedFile *sfs_createChunkedFile(char *location);
+
+/**
+ * Load chunked file at the given location
+ */
+ChunkedFile *sfs_openChunkedFile(char *location);
+
+/**
+ * Read in the chunk at the given index of the file
+ */
+char *sfs_readChunk(ChunkedFile *chunkedFile, long long atIndex);
 
 /**
  * Set the message bytes on this chunked file
