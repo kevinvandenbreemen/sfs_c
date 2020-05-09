@@ -100,6 +100,50 @@ long long bytesToLong(char *bytes) {
     return sum;
 }
 
+char *encodeChunk(char *data, long long length) {
+
+    int totalSize = 11;                      // At least has control bytes(Start of med, length ind, start of cont) and long for length
+    char *lengthBytes = longToBytes(length); // which is 8 bytes long (long long data type storage requirement)
+
+    totalSize += length;                    //  Total payload length
+
+    char *chunkBytes = malloc(totalSize*sizeof(char));
+    chunkBytes[0] = (char)START_OF_MEDIUM;
+    chunkBytes[1] = (char)LENGTH_IND;
+
+    int j = 2;                              //  Now start writing the data into the chunkBytes starting after the
+                                            //  the two control bytes
+
+    int i = 0;
+    for(i=0; i<8; i++) {                    //  Write the 8 bytes of the stored long
+        chunkBytes[j] = lengthBytes[i];
+        j++;
+    }
+
+    chunkBytes[j] = (char)START_OF_CONTENT; //  Flag content start
+    j++;
+    memcpy(chunkBytes+j, data, length);     //  Write the actual data starting at chunkBytes pointer offset by len written so far
+
+    return chunkBytes;
+}
+
+char *readChunk(char *data) {
+
+    //  Step 1:  Determine the length of this chunk using control bytes
+    if (data[0] != (char)START_OF_MEDIUM || data[1] != (char)LENGTH_IND || data[10] != START_OF_CONTENT) {
+        fprintf(stderr, "Data set is not a recognized chunk (%d, %d, %d) \n", data[0], data[1], data[10]);
+        exit(1);
+    }
+
+    long long length = bytesToLong(data + 2);
+    char *readInData = malloc((int)length * sizeof(char));  //  Allocate length bytes to a new byte array for return
+
+    //  Read in the content proper
+    memcpy(readInData, data + 11, (int)length);             //  Read in length bytes starting at position 11 in the chunk
+
+    return readInData;
+}
+
 
 //  =~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=
 

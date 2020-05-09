@@ -13,4 +13,8 @@ These bytes help the SFS detect beginnings/ends/etc in data stored on a file
  */
 #define SFS_CTRL_END_OF_HEADER 4
 
+#define START_OF_MEDIUM 1
+#define LENGTH_IND 17
+#define START_OF_CONTENT 2
+
 #endif
