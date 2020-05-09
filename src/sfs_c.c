@@ -190,9 +190,9 @@ ChunkedFile *sfs_createChunkedFile(char *location) {
     fwrite(prefixBytes, sizeof(char), 6, f);
     fclose(f);
     
-    ChunkedFile *ret = malloc(sizeof(ChunkedFile*));
+    ChunkedFile *ret = malloc(sizeof(ChunkedFile));
     ret->location = location;
-    ret->unitSize = CHUNK_SIZE;
+    ret->unitSize = (int)CHUNK_SIZE;
     return ret;
 
 }
@@ -205,7 +205,8 @@ ChunkedFile *sfs_openChunkedFile(char *location) {
     }
 
     //  Load SFS
-    ChunkedFile *ret = malloc(sizeof(ChunkedFile*));
+    ChunkedFile *ret = malloc(sizeof(ChunkedFile));
+    ret->unitSize = (int)CHUNK_SIZE;
     ret->location = location;
     return ret;
     
@@ -215,9 +216,9 @@ char *sfs_readChunk(ChunkedFile *chunkedFile, long long atIndex) {
     //  Determine offset
     long long index = 0;
     index += (long long) PREFIX_BYTE_LEN;
-    index += (atIndex * chunkedFile->messageLength);
+    index += (atIndex * chunkedFile->unitSize);
 
-    return readBytesInternal(chunkedFile, index, (long)chunkedFile->messageLength);
+    return readBytesInternal(chunkedFile, index, (long)chunkedFile->unitSize);
 }
 
 void sfs_setMessage(ChunkedFile *cf, char *message, int length) {

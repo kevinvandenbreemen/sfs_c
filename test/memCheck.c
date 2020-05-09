@@ -14,5 +14,13 @@ int main(int argc, char const *argv[])
 
     //  Cleanup
     free(cf);
+
+    //  Read in an existing indexed file
+    cf = sfs_openChunkedFile("resource/indexedFile");
+    char *data = sfs_readChunk(cf, 0);
+
+    free(data);
+    free(cf);
+
     return 0;
 }
