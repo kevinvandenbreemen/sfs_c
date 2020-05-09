@@ -92,6 +92,8 @@ START_TEST(ReadChunkFromFile) {
 
     fail_if(chunkData == NULL, "System did not read in chunk data");
 
+    fail_unless(memcmp(expectedData, chunkData, 14) == 0, "Expected data were not found");
+
 }
 END_TEST
 

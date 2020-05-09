@@ -218,7 +218,8 @@ char *sfs_readChunk(ChunkedFile *chunkedFile, long long atIndex) {
     index += (long long) PREFIX_BYTE_LEN;
     index += (atIndex * chunkedFile->unitSize);
 
-    return readBytesInternal(chunkedFile, index, (long)chunkedFile->unitSize);
+    char *chunkData = readBytesInternal(chunkedFile, index, (long)chunkedFile->unitSize);
+    return readChunk(chunkData);
 }
 
 void sfs_setMessage(ChunkedFile *cf, char *message, int length) {
