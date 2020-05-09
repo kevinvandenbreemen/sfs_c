@@ -9,7 +9,7 @@ Internal functions (code that isn't exposed to outside world)
 START_TEST(LongToBytes) {
 
     //  To bytes
-    long long lo = 42;
+    long long lo = -221111111;
     char longBytes[8];
     
     int shiftFactor;
@@ -19,9 +19,9 @@ START_TEST(LongToBytes) {
         shiftFactor = 56 - (i * 8);
 
         if(i == 0) {
-            longBytes[i] = (int)((lo >> shiftFactor) & 0xFF);
+            longBytes[i] = (unsigned char)((lo >> shiftFactor) & 0xFF);
         } else {
-            longBytes[i] = (int)(lo >> shiftFactor & 0xFF);
+            longBytes[i] = (unsigned char)(lo >> shiftFactor & 0xFF);
         }
 
         printf("Long bytes at %d = %d\n", i, longBytes[i]);
@@ -35,12 +35,12 @@ START_TEST(LongToBytes) {
 
         returnShiftFac = 56 - (i * 8);
 
-        long someLong = (long)( (longBytes[i] << returnShiftFac) );
-        sum |= ((long)(longBytes[i]) << returnShiftFac);
-        printf("sum=%ld\n", someLong);
+        long rawByteData = (long long)((unsigned char)(longBytes[i])) << returnShiftFac;
+        sum |= rawByteData;
+        printf("longSegment=%ld\n", rawByteData);
     }
 
-    fail_if(sum != 42, "Value %ld != 42", sum);
+    fail_if(sum != -221111111, "Value %ld != -221111111", sum);
 
 }
 END_TEST
