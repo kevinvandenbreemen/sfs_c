@@ -29,5 +29,9 @@ int main(int argc, char const *argv[])
     free(data);
     free(cf);
 
+    cf = sfs_createChunkedFile("testOutput/perftestWriteChunk");
+    sfs_writeChunk(cf, 0, "writeCHUNK", 10);
+    free(cf);
+
     return 0;
 }

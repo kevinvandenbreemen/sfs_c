@@ -97,6 +97,26 @@ START_TEST(ReadChunkFromFile) {
 }
 END_TEST
 
+START_TEST(WriteChunkToFile) {
+
+    char *filePath = "testOutput/writeChunkToFile";
+    ChunkedFile *cf = sfs_createChunkedFile(filePath);
+    cf->unitSize = 50;  //  Shorten unit size to make it easier to test
+
+    char *expectedData = "writeCHUNK";
+
+    sfs_writeChunk(cf, 0, "writeCHUNK", 10);
+
+    cf = sfs_openChunkedFile(filePath);
+    cf->unitSize = 50;  //  Shorten unit size to make it easier to test
+
+    char *readIn = sfs_readChunk(cf, 0);
+
+    fail_unless(memcmp(expectedData, readIn, 10) == 0, "Expected chunk data not found");
+
+}
+END_TEST
+
 int main(void)
 {
     Suite *suite = suite_create("Chunked File Management");
@@ -114,6 +134,7 @@ int main(void)
     tcase_add_test(createOpen, OverwriteMessageInFile);
     tcase_add_test(createOpen, OpenChunkedFile);
     tcase_add_test(createOpen, ReadChunkFromFile);
+    tcase_add_test(createOpen, WriteChunkToFile);
     suite_add_tcase(suite, createOpen);
 
     srunner_run_all(runner, CK_ENV);

@@ -55,6 +55,11 @@ ChunkedFile *sfs_openChunkedFile(char *location);
 char *sfs_readChunk(ChunkedFile *chunkedFile, long long atIndex);
 
 /**
+ * Write in the given data as a chunk to the given file
+ */
+void sfs_writeChunk(ChunkedFile *chunkedFile, long long atIndex, char *data, int length);
+
+/**
  * Set the message bytes on this chunked file
  */
 void sfs_setMessage(ChunkedFile *cf, char *message, int length);

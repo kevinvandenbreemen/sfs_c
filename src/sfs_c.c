@@ -129,6 +129,8 @@ char *encodeChunk(char *data, long long length) {
     j++;
     memcpy(chunkBytes+j, data, length);     //  Write the actual data starting at chunkBytes pointer offset by len written so far
 
+    free(lengthBytes);
+
     return chunkBytes;
 }
 
@@ -223,6 +225,20 @@ char *sfs_readChunk(ChunkedFile *chunkedFile, long long atIndex) {
     free(chunkData);
 
     return payload;
+}
+
+void sfs_writeChunk(ChunkedFile *chunkedFile, long long atIndex, char *data, int length) {
+    //  Determine offset
+    long long index = (atIndex * chunkedFile->unitSize);
+    index += PREFIX_BYTE_LEN;
+
+    long long len = (long long)length;
+    char *chunk = encodeChunk(data, len);
+
+    writeBytesInternal(chunkedFile, index, chunk, len + 11);
+
+    free(chunk);
+
 }
 
 void sfs_setMessage(ChunkedFile *cf, char *message, int length) {
