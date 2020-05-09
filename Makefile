@@ -33,7 +33,7 @@ test: build
 	@mkdir $(TEST_OUT)
 	./runTests
 
-	gcc $(TEST_DIR)/internalTests.c -Wall -o $(TEST_EXE) $(OBJ_FILE) -lcheck -lm -lpthread -lrt  -lm -lsubunit
+	gcc $(TEST_DIR)/internalTests.c -Wall -o $(TEST_EXE) -lcheck -lm -lpthread -lrt  -lm -lsubunit
 	./runTests
 
 memCheck: build

@@ -19,46 +19,8 @@
  */
 #define PREFIX_BYTE_LEN 256
 
-int sfs_checkIsSFS(char *filePath) {
-
-    FILE *filePointer;
-    if((filePointer = fopen(filePath, "rb")) == NULL) {
-        fprintf(stderr, "Could not open %s\n", filePath);
-        return -1;
-    }
-
-    char prefixBuffer[6];
-    if (fread(prefixBuffer, 1, 6, filePointer) == 6) {
-        char expectedBytes[6] = SFS_SIGNATURE;
-        int i;
-        for(i=0; i<6; i++) {
-            if(expectedBytes[i] != prefixBuffer[i]) {
-                return -1;
-            }
-        }
-
-        return 1;
-    }
-    
-
-    return 0;
-}
-
-ChunkedFile *sfs_createChunkedFile(char *location) {
-
-    //  Create the file
-    FILE *f = fopen(location, "wb");
-    
-    //  Write the prefix bytes
-    char prefixBytes[6] = SFS_SIGNATURE;
-    fwrite(prefixBytes, sizeof(char), 6, f);
-    fclose(f);
-    
-    ChunkedFile *ret = malloc(sizeof(ChunkedFile*));
-    ret->location = location;
-    return ret;
-
-}
+//  INTERNAL/static FUNCTIONS NOT TO BE CONSUMED BY OTHER MODULES
+//  =~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=
 
 /**
  * Read in the given number of bytes from the given position in the ChunkedFile
@@ -100,6 +62,92 @@ static int writeBytesInternal(ChunkedFile *cf, long cursor, char *bytes, long nu
 
     return 0;
 }
+
+
+char* longToBytes(long long value) {
+    char* longBytes = malloc(sizeof(char) * 8);
+    
+    int shiftFactor;
+    int i=0;
+    for(i=0; i<8; i++) {
+
+        shiftFactor = 56 - (i * 8);
+
+        if(i == 0) {
+            longBytes[i] = (unsigned char)((value >> shiftFactor) & 0xFF);
+        } else {
+            longBytes[i] = (unsigned char)(value >> shiftFactor & 0xFF);
+        }
+    }
+
+    return longBytes;
+}
+
+long long bytesToLong(char *bytes) {
+    int i=0;
+    //  From bytes
+    long long sum = 0;
+    
+    int returnShiftFac;
+    for(i=0; i<8; i++) {
+
+        returnShiftFac = 56 - (i * 8);
+
+        long rawByteData = (long long)((unsigned char)(bytes[i])) << returnShiftFac;
+        sum |= rawByteData;
+    }
+
+    return sum;
+}
+
+
+//  =~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=
+
+//  PUBLIC API IMPLEMENTATION
+//  =~=~=~=~=~=~=~=~=~=~=~=~=
+
+int sfs_checkIsSFS(char *filePath) {
+
+    FILE *filePointer;
+    if((filePointer = fopen(filePath, "rb")) == NULL) {
+        fprintf(stderr, "Could not open %s\n", filePath);
+        return -1;
+    }
+
+    char prefixBuffer[6];
+    if (fread(prefixBuffer, 1, 6, filePointer) == 6) {
+        char expectedBytes[6] = SFS_SIGNATURE;
+        int i;
+        for(i=0; i<6; i++) {
+            if(expectedBytes[i] != prefixBuffer[i]) {
+                return -1;
+            }
+        }
+
+        return 1;
+    }
+    
+
+    return 0;
+}
+
+ChunkedFile *sfs_createChunkedFile(char *location) {
+
+    //  Create the file
+    FILE *f = fopen(location, "wb");
+    
+    //  Write the prefix bytes
+    char prefixBytes[6] = SFS_SIGNATURE;
+    fwrite(prefixBytes, sizeof(char), 6, f);
+    fclose(f);
+    
+    ChunkedFile *ret = malloc(sizeof(ChunkedFile*));
+    ret->location = location;
+    return ret;
+
+}
+
+
 
 void sfs_setMessage(ChunkedFile *cf, char *message, int length) {
 

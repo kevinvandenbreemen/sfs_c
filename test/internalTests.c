@@ -1,47 +1,15 @@
 /*
 SFS In C Project:
 Internal functions (code that isn't exposed to outside world)
+Use this test file to unit test functions in the sfs_c.c file 
+that are not implementations of the functions exposed in the 
+header file (sfs_c.h) for this library
 */
 
 #include <check.h>
 #include <string.h>
 #include <stdlib.h>
-
-char* longToBytes(long long value) {
-    char* longBytes = malloc(sizeof(char) * 8);
-    
-    int shiftFactor;
-    int i=0;
-    for(i=0; i<8; i++) {
-
-        shiftFactor = 56 - (i * 8);
-
-        if(i == 0) {
-            longBytes[i] = (unsigned char)((value >> shiftFactor) & 0xFF);
-        } else {
-            longBytes[i] = (unsigned char)(value >> shiftFactor & 0xFF);
-        }
-    }
-
-    return longBytes;
-}
-
-long long bytesToLong(char *bytes) {
-    int i=0;
-    //  From bytes
-    long long sum = 0;
-    
-    int returnShiftFac;
-    for(i=0; i<8; i++) {
-
-        returnShiftFac = 56 - (i * 8);
-
-        long rawByteData = (long long)((unsigned char)(bytes[i])) << returnShiftFac;
-        sum |= rawByteData;
-    }
-
-    return sum;
-}
+#include "../src/sfs_c.c"
 
 START_TEST(LongToBytes) {
 
