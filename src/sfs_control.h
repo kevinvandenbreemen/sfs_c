@@ -1,3 +1,9 @@
+/*
+SFS In C Project:
+SFS Control Bytes
+These bytes help the SFS detect beginnings/ends/etc in data stored on a file
+*/
+
 #ifndef IN_SFS_CTRL_C
 #define IN_SFS_CTRL_C
 
