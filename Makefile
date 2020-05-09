@@ -33,6 +33,9 @@ test: build
 	@mkdir $(TEST_OUT)
 	./runTests
 
+	gcc $(TEST_DIR)/internalTests.c -Wall -o $(TEST_EXE) $(OBJ_FILE) -lcheck -lm -lpthread -lrt  -lm -lsubunit
+	./runTests
+
 memCheck: build
 	gcc $(PERF_TEST) -Wall -g -o $(PERF_EXE) $(OBJ_COMPILE) -lcheck -lm -lpthread -lrt  -lm -lsubunit
 	@mkdir $(TEST_OUT)
