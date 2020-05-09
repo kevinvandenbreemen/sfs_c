@@ -17,7 +17,13 @@ int main(int argc, char const *argv[])
 
     //  Read in an existing indexed file
     cf = sfs_openChunkedFile("resource/indexedFile");
-    char *data = sfs_readChunk(cf, 0);
+    char *data = sfs_readChunk(cf, 1);
+
+    int i;
+    printf("Chunk Data:\n");
+    for(i=0; i<cf->unitSize; i++) {
+        printf("%c", data[i]);
+    }
 
     free(data);
     free(cf);

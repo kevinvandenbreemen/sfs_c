@@ -85,8 +85,10 @@ START_TEST(ReadChunkFromFile) {
     char *filePath = "resource/indexedFile";
     ChunkedFile *cf = sfs_openChunkedFile(filePath);
 
+    char *expectedData = "this is a test";
+
     //  This should read in the FAT table from the existing SFS
-    char *chunkData = sfs_readChunk(cf, 0);
+    char *chunkData = sfs_readChunk(cf, 1);
 
     fail_if(chunkData == NULL, "System did not read in chunk data");
 
