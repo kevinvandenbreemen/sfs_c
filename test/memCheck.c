@@ -1,5 +1,6 @@
 #include "../src/sfs_c.h"
 #include <stdlib.h>
+#include <stdio.h>
 
 #define TEST_FILE "testOutput/testFile"
 
@@ -21,7 +22,7 @@ int main(int argc, char const *argv[])
 
     int i;
     printf("Chunk Data:\n");
-    for(i=0; i<cf->unitSize; i++) {
+    for(i=0; i<14; i++) {
         printf("%c", data[i]);
     }
 
