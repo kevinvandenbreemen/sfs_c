@@ -2,6 +2,7 @@
 
 #include "sfs_c.h"
 #include "sfs_control.h"
+#include "../dependencies/log.c/src/log.h"
 
 #include <stdio.h>
 #include <stdlib.h>

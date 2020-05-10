@@ -4,6 +4,7 @@
 core
 testOutput
 memCheck
+dependencies
 
 # Output file
 built
