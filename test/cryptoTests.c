@@ -18,6 +18,8 @@ START_TEST(OpenCipherHandle) {
 
     fail_if(handle == NULL, "System should have created cipher");
 
+    gcry_cipher_close(handle);
+
 }
 END_TEST
 
