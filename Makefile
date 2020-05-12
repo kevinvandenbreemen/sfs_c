@@ -50,6 +50,11 @@ test: build
 	gcc $(TEST_DIR)/internalTests.c -Wall -o $(TEST_EXE) -lcheck -lm -lpthread -lrt  -lm -lsubunit
 	./runTests
 
+	# See also https://gnupg.org/documentation/manuals/gcrypt/Building-sources.html#Building-sources regarding libgcrypt-config command
+	# and why it's needed in order for this to build
+	gcc $(TEST_DIR)/cryptoTests.c `libgcrypt-config --libs` -Wall -o $(TEST_EXE) -lcheck -lm -lpthread -lrt  -lm -lsubunit
+	./runTests
+
 memCheck: build
 	gcc $(PERF_TEST) -Wall -g -o $(PERF_EXE) $(OBJ_COMPILE) -lcheck -lm -lpthread -lrt  -lm -lsubunit
 	@mkdir $(TEST_OUT)
