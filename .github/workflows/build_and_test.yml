@@ -13,7 +13,7 @@ jobs:
 
     steps:
     - name: Environment Setup
-      run: sudo apt-get update -y; sudo apt-get install -y check; sudo apt-get install -y valgrind; sudo apt-get install -y libgcrypt20
+      run: sudo apt-get update -y; sudo apt-get install -y check; sudo apt-get install -y valgrind; sudo apt-get install -y libgcrypt20 libgcrypt20-dev
     - uses: actions/checkout@v2
     - name: "Unit Tests"
       run: make test
