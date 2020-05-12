@@ -23,6 +23,20 @@ START_TEST(OpenCipherHandle) {
 }
 END_TEST
 
+START_TEST(SetCipherKey) {
+
+    //  See also https://gnupg.org/documentation/manuals/gcrypt/Working-with-cipher-handles.html#Working-with-cipher-handles
+    gcry_cipher_hd_t handle;
+    gcry_cipher_open(&handle, GCRY_CIPHER_AES256, GCRY_CIPHER_MODE_CBC, GCRY_CIPHER_SECURE);
+
+    char key[32];
+    printf("Result of keyset:  %d\n", gcry_cipher_setkey(handle, &key, 32));
+
+    gcry_cipher_close(handle);
+
+}
+END_TEST
+
 int main(int argc, char const *argv[])
 {
     Suite *suite = suite_create("Crypto Stuff");
@@ -31,6 +45,7 @@ int main(int argc, char const *argv[])
     TCase *case1 = tcase_create("Cipher Fiddling Around");
 
     tcase_add_test(case1, OpenCipherHandle);
+    tcase_add_test(case1, SetCipherKey);
     suite_add_tcase(suite, case1);
 
     srunner_run_all(runner, CK_ENV);
