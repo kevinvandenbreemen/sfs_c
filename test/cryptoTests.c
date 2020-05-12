@@ -13,8 +13,8 @@ libgcrypt20-dev
 START_TEST(OpenCipherHandle) {
 
     //  See also https://gnupg.org/documentation/manuals/gcrypt/Working-with-cipher-handles.html#Working-with-cipher-handles
-    gcry_cipher_hd_t *handle;
-    gcry_cipher_open(handle, GCRY_CIPHER_AES256, GCRY_CIPHER_MODE_CBC, GCRY_CIPHER_SECURE);
+    gcry_cipher_hd_t handle;
+    gcry_cipher_open(&handle, GCRY_CIPHER_AES256, GCRY_CIPHER_MODE_CBC, GCRY_CIPHER_SECURE);
 
     fail_if(handle == NULL, "System should have created cipher");
 
