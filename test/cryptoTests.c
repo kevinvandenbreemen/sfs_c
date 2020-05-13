@@ -10,6 +10,15 @@ libgcrypt20-dev
 #include <gcrypt.h>
 #include <check.h>
 
+START_TEST(InitGCrypt) {
+    //  This testing was done as of version 1.8.5 installed on my machine
+    char *v = gcry_check_version("1.8.5");
+    printf("Version Check:  %s\n", v);
+
+    fail_if(!v);
+}
+END_TEST
+
 START_TEST(OpenCipherHandle) {
 
     //  See also https://gnupg.org/documentation/manuals/gcrypt/Working-with-cipher-handles.html#Working-with-cipher-handles
@@ -122,6 +131,7 @@ int main(int argc, char const *argv[])
 
     TCase *case1 = tcase_create("Cipher Fiddling Around");
 
+    tcase_add_test(case1, InitGCrypt);
     tcase_add_test(case1, OpenCipherHandle);
     tcase_add_test(case1, DoAESEncrypt);
     tcase_add_test(case1, DoATwoFishEncrypt);
