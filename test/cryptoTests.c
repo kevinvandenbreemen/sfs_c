@@ -11,8 +11,8 @@ libgcrypt20-dev
 #include <check.h>
 
 START_TEST(InitGCrypt) {
-    //  This testing was done as of version 1.8.5 installed on my machine
-    char *v = gcry_check_version("1.8.5");
+    //  This testing was done as of version 1.8.1 installed on my machine and also Github task runner
+    const char *v = gcry_check_version("1.8.1");
     printf("Version Check:  %s\n", v);
 
     fail_if(!v);
