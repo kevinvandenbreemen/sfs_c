@@ -55,7 +55,6 @@ START_TEST(DoAESEncrypt) {
     error = gcry_cipher_encrypt(handle, encBuffer, txtLength, txtBuffer, txtLength);
     fail_if(error);
 
-    //  TODO    Why do we need this???
     error = gcry_cipher_setiv(handle, iv, 16);
     fail_if(error);
 
@@ -102,7 +101,6 @@ START_TEST(DoATwoFishEncrypt) {
     error = gcry_cipher_encrypt(handle, encBuffer, txtLength, txtBuffer, txtLength);
     fail_if(error);
 
-    //  TODO    Why do we need this???
     error = gcry_cipher_setiv(handle, iv, 16);
     fail_if(error);
 
