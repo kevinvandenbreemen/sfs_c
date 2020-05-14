@@ -80,9 +80,20 @@ END_TEST
 
 START_TEST(DoATwoFishEncrypt) {
 
+    gcry_error_t error;
+    
+    size_t keyLength = gcry_cipher_get_algo_keylen(GCRY_CIPHER_TWOFISH);
+    char *key = malloc(sizeof(char)*keyLength);
+    char *password = "secret123";
+    char *salt = "fasfasfasdfsf";
+
+    error = gcry_kdf_derive(password, strlen(password), GCRY_KDF_SCRYPT, GCRY_KDF_SIMPLE_S2K, salt, strlen(salt), 100, keyLength, key);
+    fail_if(error);
+    printf("(%s)\tKey='%s'\n", password, key);
+
     //  Based on code found here
     //  https://cboard.cprogramming.com/c-programming/105743-how-decrypt-encrypt-using-libgcrypt-arc4.html#post937372
-    gcry_error_t error;
+    
 
     char * txtBuffer = "123456789 abcdefghijklmnopqrstuvwzyz ABCDEFGHIJKLMNOPQRSTUVWZYZ";
     size_t txtLength = strlen(txtBuffer)+1; // string plus termination
@@ -94,8 +105,8 @@ START_TEST(DoATwoFishEncrypt) {
     error = gcry_cipher_open(&handle, GCRY_CIPHER_TWOFISH, GCRY_CIPHER_MODE_CBC, GCRY_CIPHER_SECURE);
     fail_if(error);
 
-    size_t keyLength = gcry_cipher_get_algo_keylen(GCRY_CIPHER_TWOFISH);
-    char key[32] = "one test AES keyone test AES key";
+    
+    
 
     error = gcry_cipher_setkey(handle, key, keyLength);
     fail_if(error);
