@@ -1,6 +1,9 @@
 # sfs_c
 A C library for reading files that use my Secure File System (chunked file) format
 
+## IMPORTANT
+This library is still under heavy development.  It should not be used for any applications until that development is complete.  There are several outstanding tasks such as initialization vector generation, key derivation, hashing, etc. that need to be completed first.
+
 # Basic Requirements
 You'll need to have valgrind and check installed in order to run the unit and mem leak tests.
 
