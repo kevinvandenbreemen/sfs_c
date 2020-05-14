@@ -9,10 +9,11 @@ libgcrypt20-dev
 
 #include <gcrypt.h>
 #include <check.h>
+#include "../src/sfs_crypt_gcry.c"
 
 START_TEST(InitGCrypt) {
     //  This testing was done as of version 1.8.1 installed on my machine and also Github task runner
-    const char *v = gcry_check_version("1.8.1");
+    const char *v = gcry_check_version(GRYPT_VERSION);
     printf("Version Check:  %s\n", v);
 
     fail_if(!v);
