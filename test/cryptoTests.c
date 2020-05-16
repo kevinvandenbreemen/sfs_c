@@ -35,11 +35,15 @@ END_TEST
 
 START_TEST(DoAESEncrypt) {
 
-    char * txtBuffer = "123456789 abcdefghijklmnopqrstuvwzyz ABCDEFGHIJKLMNOPQRSTUVWZYZ";
+    char * txtBuffer = "1234567890123456";
     char *cipherText = 
-        sfs_encrypt("123456789 abcdefghijklmnopqrstuvwzyz ABCDEFGHIJKLMNOPQRSTUVWZYZ", "one test AES keyone test AES key");
+        sfs_encrypt(txtBuffer, "one test AES keyone test AES key", 16);
 
-    char *outBuffer = sfs_decrypt(cipherText, "one test AES keyone test AES key");
+    printf("cipherText:  %s\n", cipherText);
+    //printf("CipherText:(%ld v %ld)  '%s'\n", strlen(cipherText), strlen(txtBuffer), cipherText);
+
+    printf("Decrypting Now...\n");
+    char *outBuffer = sfs_decrypt(cipherText, "one test AES keyone test AES key", 16);
 
     printf("OutBuff:  %s\n", outBuffer);
     fail_if(memcmp(outBuffer, txtBuffer, strlen(txtBuffer)) != 0);
@@ -91,6 +95,11 @@ START_TEST(DoATwoFishEncrypt) {
     error = gcry_cipher_encrypt(handle, encBuffer, txtLength, txtBuffer, txtLength);
     fail_if(error);
 
+    char *ivBytesIHope = malloc(16*sizeof(char));
+    memcpy(ivBytesIHope, encBuffer, 16);
+    printf("IV Bytes?  '%s'\n", ivBytesIHope);
+    printf("Ciphertext:  '%s'\n", encBuffer);
+
     error = gcry_cipher_setiv(handle, iv, 16);
     fail_if(error);
 
@@ -112,10 +121,10 @@ int main(int argc, char const *argv[])
 
     TCase *case1 = tcase_create("Cipher Fiddling Around");
 
-    tcase_add_test(case1, InitGCrypt);
-    tcase_add_test(case1, OpenCipherHandle);
+    //tcase_add_test(case1, InitGCrypt);
+    //tcase_add_test(case1, OpenCipherHandle);
     tcase_add_test(case1, DoAESEncrypt);
-    tcase_add_test(case1, DoATwoFishEncrypt);
+    //tcase_add_test(case1, DoATwoFishEncrypt);
     suite_add_tcase(suite, case1);
 
     srunner_run_all(runner, CK_ENV);
