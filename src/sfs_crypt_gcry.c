@@ -38,7 +38,6 @@ char * sfs_encrypt(char *data, char *password, int length){
     memcpy(&finalProduct[0], iv, IV_LEN);
     printf("Will write %d to final product at %d\n", length, IV_LEN);
     memcpy(&finalProduct[IV_LEN], &encBuffer[0], length);
-    //*(finalProduct + IV_LEN) = *encBuffer;
     
     gcry_cipher_close(handle);
 

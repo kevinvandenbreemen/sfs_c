@@ -121,10 +121,10 @@ int main(int argc, char const *argv[])
 
     TCase *case1 = tcase_create("Cipher Fiddling Around");
 
-    //tcase_add_test(case1, InitGCrypt);
-    //tcase_add_test(case1, OpenCipherHandle);
+    tcase_add_test(case1, InitGCrypt);
+    tcase_add_test(case1, OpenCipherHandle);
     tcase_add_test(case1, DoAESEncrypt);
-    //tcase_add_test(case1, DoATwoFishEncrypt);
+    tcase_add_test(case1, DoATwoFishEncrypt);
     suite_add_tcase(suite, case1);
 
     srunner_run_all(runner, CK_ENV);
