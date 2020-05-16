@@ -10,6 +10,7 @@ libgcrypt20-dev
 #include <gcrypt.h>
 #include <check.h>
 #include "../src/sfs_crypt_gcry.c"
+#include "../src/sfs_util.c"
 
 START_TEST(InitGCrypt) {
     //  This testing was done as of version 1.8.1 installed on my machine and also Github task runner
@@ -38,17 +39,19 @@ START_TEST(DoAESEncrypt) {
     char * txtBuffer = "1234567890123456";
     char *cipherText = 
         sfs_encrypt(txtBuffer, "one test AES keyone test AES key", 16);
+    sfs_bytes_debug("Plaintext",txtBuffer, 16, 0);
 
     printf("cipherText:  %s\n", cipherText);
-    //printf("CipherText:(%ld v %ld)  '%s'\n", strlen(cipherText), strlen(txtBuffer), cipherText);
+    sfs_bytes_debug("CipherText\n", cipherText, 16+IV_LEN, 0);
 
     printf("Decrypting Now...\n");
     char *outBuffer = sfs_decrypt(cipherText, "one test AES keyone test AES key", 16);
 
     printf("OutBuff:  %s\n", outBuffer);
+    sfs_bytes_debug("Decrypted",outBuffer, 16, 0);
     fail_if(memcmp(outBuffer, txtBuffer, strlen(txtBuffer)) != 0);
 
-
+    
 }
 END_TEST
 
