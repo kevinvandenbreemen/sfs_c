@@ -10,15 +10,17 @@ This file does not need to be exposed to code outside of the library
 #include <stdio.h>
 #include "../dependencies/log.c/src/log.h"
 
-void sfs_bytes_debug(unsigned char *data, int length, int vertical) {
+void sfs_bytes_debug(void *data, int length, int vertical) {
     char *format = "[%d] ";
     if(vertical) {
         format = "[%d] \n";
     }
 
+    unsigned char *tmp = (unsigned char*)data;
+
     int i;
     for(i=0; i<length; i++) {
-        printf(format, data[i]);
+        printf(format, tmp[i]);
     }
     printf("\n");
 }
