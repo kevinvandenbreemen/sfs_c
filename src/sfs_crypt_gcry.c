@@ -20,7 +20,7 @@ char * sfs_encrypt(char *data, char *password, int length){
     size_t keyLength = gcry_cipher_get_algo_keylen(GCRY_CIPHER_AES256);
     error = gcry_cipher_setkey(handle, password, keyLength);
 
-    char *iv = "a test ini value";
+    unsigned char *iv = gcry_random_bytes_secure(IV_LEN, GCRY_VERY_STRONG_RANDOM);
 
     error = gcry_cipher_setiv(handle, iv, 16);
     error = gcry_cipher_encrypt(handle, encBuffer, length, txtBuffer, length);
