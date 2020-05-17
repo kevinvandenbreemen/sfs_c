@@ -117,6 +117,36 @@ START_TEST(DoATwoFishEncrypt) {
 }
 END_TEST
 
+START_TEST(KeyGeneration) {
+
+    char *key = "test";
+    sfs_bytes_debug("Original Key ('test') bytes:", key, 4, 0);
+
+//  Expected result from existing dual-layer encryption key derivation based on the text above
+/*
+key1:  [144] [165] [33] [30] [81] [178] [33] [236] [154] [223] [22] [165] [96] [136] [139] [118] [38] [139] [245] [98] [235] [141] [110] [112] [80] [78] [197] [90] [0] [30] [155] [160] 
+key2:  [191] [154] [191] [253] [192] [113] [17] [195] [162] [78] [53] [94] [98] [64] [172] [206] [59] [10] [44] [47] [171] [77] [51] [100] [14] [100] [175] [239] [86] [229] [163] [4] 
+*/
+
+    gcry_error_t err;
+    gcry_md_hd_t digest;
+    err = gcry_md_open(&digest, GCRY_MD_SHA256, GCRY_MD_FLAG_SECURE);
+    fail_if(err != 0);
+
+    //  Add additional algorithm, SHA3:
+    err = gcry_md_enable(digest, GCRY_MD_SHA3_256);
+    fail_if(err != 0);
+
+    gcry_md_write(digest, key, 4);
+
+    void *hashed = gcry_md_read(digest, GCRY_MD_SHA256);
+
+    sfs_bytes_debug("Hashed Key", hashed, 256, 0);
+
+    gcry_md_close(digest);
+
+}END_TEST
+
 int main(int argc, char const *argv[])
 {
     Suite *suite = suite_create("Crypto Stuff");
@@ -128,6 +158,7 @@ int main(int argc, char const *argv[])
     tcase_add_test(case1, OpenCipherHandle);
     tcase_add_test(case1, DoAESEncrypt);
     tcase_add_test(case1, DoATwoFishEncrypt);
+    tcase_add_test(case1, KeyGeneration);
     suite_add_tcase(suite, case1);
 
     srunner_run_all(runner, CK_ENV);
