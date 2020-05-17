@@ -20,6 +20,7 @@ char * sfs_encrypt(char *data, char *password, int length){
     size_t keyLength = gcry_cipher_get_algo_keylen(GCRY_CIPHER_AES256);
     error = gcry_cipher_setkey(handle, password, keyLength);
 
+    //  See also https://www.gnupg.org/(es)/documentation/manuals/gcrypt/Random-Numbers.html#Random-Numbers
     unsigned char *iv = gcry_random_bytes_secure(IV_LEN, GCRY_VERY_STRONG_RANDOM);
 
     error = gcry_cipher_setiv(handle, iv, 16);
