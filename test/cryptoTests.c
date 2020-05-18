@@ -65,7 +65,7 @@ START_TEST(DoATwoFishEncrypt) {
     char *salt = "fasfasfasdfsf";
 
     error = gcry_kdf_derive(password, strlen(password), GCRY_KDF_SCRYPT, GCRY_KDF_SIMPLE_S2K, salt, strlen(salt), 100, keyLength, key);
-    fail_if(error);
+    fail_if(error, gcry_strerror(error));
     printf("(%s)\tKey='%s'\n", password, key);
 
     //  Based on code found here
@@ -80,23 +80,23 @@ START_TEST(DoATwoFishEncrypt) {
     //  See also https://gnupg.org/documentation/manuals/gcrypt/Working-with-cipher-handles.html#Working-with-cipher-handles
     gcry_cipher_hd_t handle;
     error = gcry_cipher_open(&handle, GCRY_CIPHER_TWOFISH, GCRY_CIPHER_MODE_CBC, GCRY_CIPHER_SECURE);
-    fail_if(error);
+    fail_if(error, gcry_strerror(error));
 
     
     
 
     error = gcry_cipher_setkey(handle, key, keyLength);
-    fail_if(error);
+    fail_if(error, gcry_strerror(error));
 
     printf("Result of keyset:  %d\n", error);
 
     char *iv = "a test ini value";
 
     error = gcry_cipher_setiv(handle, iv, 16);
-    fail_if(error);
+    fail_if(error, gcry_strerror(error));
 
     error = gcry_cipher_encrypt(handle, encBuffer, txtLength, txtBuffer, txtLength);
-    fail_if(error);
+    fail_if(error, gcry_strerror(error));
 
     char *ivBytesIHope = malloc(16*sizeof(char));
     memcpy(ivBytesIHope, encBuffer, 16);
@@ -104,10 +104,10 @@ START_TEST(DoATwoFishEncrypt) {
     printf("Ciphertext:  '%s'\n", encBuffer);
 
     error = gcry_cipher_setiv(handle, iv, 16);
-    fail_if(error);
+    fail_if(error, gcry_strerror(error));
 
     error = gcry_cipher_decrypt(handle, outBuffer, txtLength, encBuffer, txtLength);
-    fail_if(error);
+    fail_if(error, gcry_strerror(error));
 
     printf("OutBuff:  %s\n", outBuffer);
     fail_if(memcmp(outBuffer, txtBuffer, txtLength) != 0);
@@ -131,11 +131,11 @@ key2:  [191] [154] [191] [253] [192] [113] [17] [195] [162] [78] [53] [94] [98] 
     gcry_error_t err;
     gcry_md_hd_t digest;
     err = gcry_md_open(&digest, GCRY_MD_SHA256, GCRY_MD_FLAG_SECURE);
-    fail_if(err != 0);
+    fail_if(err != 0, gcry_strerror(err));
 
     //  Add additional algorithm, SHA3:
     err = gcry_md_enable(digest, GCRY_MD_SHA3_256);
-    fail_if(err != 0);
+    fail_if(err != 0, gcry_strerror(err));
 
     gcry_md_write(digest, key, 4);
 
@@ -148,10 +148,7 @@ key2:  [191] [154] [191] [253] [192] [113] [17] [195] [162] [78] [53] [94] [98] 
     char *salt = "abcdefghijklmno";
     err = gcry_kdf_derive(hashed, 32, GCRY_KDF_SCRYPT, GCRY_KDF_PBKDF2, salt, strlen(salt), 20, 32, generatedKey);
     
-    if(err != 0){
-        printf("ERR:  %s\n", gcry_strerror(err));
-    }
-    fail_if(err != 0);
+    fail_if(err != 0, gcry_strerror(err));
 
     sfs_bytes_debug("Generated Key", generatedKey, 32, 0);
 
