@@ -7,6 +7,14 @@ Header file defining set of functions that any crypto that SFS relies on must pr
 */
 
 /**
+ * Perform any startup needed for the underlying cryptosystem to get ready.  Note that if you wish to print out
+ * versioning info etc during your implementation's startup you should do so here as well.
+ * 
+ * Returns 0 if successful, any other value otherwise.
+ */
+int sfs_startup();
+
+/**
  * Given the data and a password encrypts this data, returning the ciphertext
  * result.  Note that the resulting ciphertext will be prefixed with an initialization
  * vector.

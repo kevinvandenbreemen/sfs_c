@@ -13,11 +13,7 @@ libgcrypt20-dev
 #include "../src/sfs_util.c"
 
 START_TEST(InitGCrypt) {
-    //  This testing was done as of version 1.8.1 installed on my machine and also Github task runner
-    const char *v = gcry_check_version(GRYPT_VERSION);
-    printf("Version Check:  %s\n", v);
-
-    fail_if(!v);
+    fail_if(sfs_startup() != 0);
 }
 END_TEST
 

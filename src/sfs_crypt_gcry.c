@@ -6,6 +6,17 @@
 
 #define GRYPT_VERSION "1.8.1"
 
+int sfs_startup() {
+    const char *v = gcry_check_version(GRYPT_VERSION);
+    printf("Version Check:  %s\n", v);
+
+    if(!v) {
+        return 9000;
+    }
+
+    return 0;
+}
+
 char * sfs_encrypt(char *data, char *password, int length){
 
     //  Based on code found here
