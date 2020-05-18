@@ -141,9 +141,23 @@ key2:  [191] [154] [191] [253] [192] [113] [17] [195] [162] [78] [53] [94] [98] 
 
     void *hashed = gcry_md_read(digest, GCRY_MD_SHA256);
 
-    sfs_bytes_debug("Hashed Key", hashed, 256, 0);
+    sfs_bytes_debug("Hashed Key", hashed, 32, 0);
+
+    //  Now derive key
+    void *generatedKey = gcry_malloc_secure(32);
+    char *salt = "abcdefghijklmno";
+    err = gcry_kdf_derive(hashed, 32, GCRY_KDF_SCRYPT, GCRY_KDF_PBKDF2, salt, strlen(salt), 20, 32, generatedKey);
+    
+    if(err != 0){
+        printf("ERR:  %s\n", gcry_strerror(err));
+    }
+    fail_if(err != 0);
+
+    sfs_bytes_debug("Generated Key", generatedKey, 32, 0);
 
     gcry_md_close(digest);
+
+    sfs_bytes_debug("Generated Key (post close)", generatedKey, 32, 0);
 
 }END_TEST
 
