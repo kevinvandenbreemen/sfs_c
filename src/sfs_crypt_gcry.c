@@ -1,5 +1,6 @@
 #include "sfs_crypt.h"
 #include <gcrypt.h>
+#include "sfs_about.h"
 
 //  Initialization vectors are always 16 bytes long!
 #define IV_LEN 16
@@ -8,7 +9,9 @@
 
 int sfs_startup() {
     const char *v = gcry_check_version(GRYPT_VERSION);
-    printf("Version Check:  %s\n", v);
+
+    printf("%s\n%s\n", SFS_C_ABOUT, SFS_C_VERSION);
+    printf("libgcrypt Version Check:  %s\n", v);
 
     if(!v) {
         return 9000;
