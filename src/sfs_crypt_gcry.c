@@ -46,7 +46,7 @@ static void *derivePassword(char *password) {
 
     //  Now derive key
     void *generatedKey = gcry_malloc_secure(32);
-    char *salt = "abcdefghijklmno";
+    char *salt = "abcdefghijklmno"; //  TODO    Generate
     err = gcry_kdf_derive(hashed, 32, GCRY_KDF_SCRYPT, GCRY_KDF_PBKDF2, salt, strlen(salt), 20, 32, generatedKey);
     
     if (err != 0){
@@ -106,17 +106,14 @@ char * sfs_decrypt(char *cipherText, char *password, int length) {
     size_t keyLength = gcry_cipher_get_algo_keylen(GCRY_CIPHER_AES256);
 
     error = gcry_cipher_setkey(handle, key, keyLength);
-    printf("Result of keyset:  %d\n", error);
 
     char *iv = malloc(IV_LEN);
     memcpy(iv, cipherText, IV_LEN);
     error = gcry_cipher_setiv(handle, iv, 16);
-    printf("Result of iv set (%s):  %d\n", iv, error);
 
     char *cipherTextProper = &cipherText[IV_LEN];
 
     error = gcry_cipher_decrypt(handle, outBuffer, length, cipherTextProper, length);
-    printf("Result of decrypt:  %d\n", error);
 
     gcry_cipher_close(handle);
 
