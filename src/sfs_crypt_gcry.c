@@ -20,7 +20,48 @@ int sfs_startup() {
     return 0;
 }
 
+/**
+ * Perform key stretching/derivation to convert the given password into a key for encryption
+ */
+static void *derivePassword(char *password) {
+    gcry_error_t err;
+    gcry_md_hd_t digest;
+    err = gcry_md_open(&digest, GCRY_MD_SHA256, GCRY_MD_FLAG_SECURE);
+    if (err != 0){
+        printf("%s\n", gcry_strerror(err));
+        return NULL;
+    }
+
+    //  Add additional algorithm, SHA3:
+    err = gcry_md_enable(digest, GCRY_MD_SHA3_256);
+    
+    if (err != 0){
+        printf("%s\n", gcry_strerror(err));
+        return NULL;
+    }
+
+    gcry_md_write(digest, password, strlen(password));
+
+    void *hashed = gcry_md_read(digest, GCRY_MD_SHA256);
+
+    //  Now derive key
+    void *generatedKey = gcry_malloc_secure(32);
+    char *salt = "abcdefghijklmno";
+    err = gcry_kdf_derive(hashed, 32, GCRY_KDF_SCRYPT, GCRY_KDF_PBKDF2, salt, strlen(salt), 20, 32, generatedKey);
+    
+    if (err != 0){
+        printf("%s\n", gcry_strerror(err));
+        return NULL;
+    }
+
+    gcry_md_close(digest);
+
+    return generatedKey;
+}
+
 char * sfs_encrypt(char *data, char *password, int length){
+
+    void *key = derivePassword(password);
 
     //  Based on code found here
     //  https://cboard.cprogramming.com/c-programming/105743-how-decrypt-encrypt-using-libgcrypt-arc4.html#post937372
@@ -32,7 +73,7 @@ char * sfs_encrypt(char *data, char *password, int length){
     gcry_cipher_hd_t handle;
     error = gcry_cipher_open(&handle, GCRY_CIPHER_AES256, GCRY_CIPHER_MODE_CBC, GCRY_CIPHER_SECURE);
     size_t keyLength = gcry_cipher_get_algo_keylen(GCRY_CIPHER_AES256);
-    error = gcry_cipher_setkey(handle, password, keyLength);
+    error = gcry_cipher_setkey(handle, key, keyLength);
 
     //  See also https://www.gnupg.org/(es)/documentation/manuals/gcrypt/Random-Numbers.html#Random-Numbers
     unsigned char *iv = gcry_random_bytes_secure(IV_LEN, GCRY_VERY_STRONG_RANDOM);
@@ -53,6 +94,8 @@ char * sfs_encrypt(char *data, char *password, int length){
 
 char * sfs_decrypt(char *cipherText, char *password, int length) {
     
+    void *key = derivePassword(password);
+
     gcry_error_t error;
 
     char * outBuffer = malloc(length);
@@ -62,7 +105,7 @@ char * sfs_decrypt(char *cipherText, char *password, int length) {
     error = gcry_cipher_open(&handle, GCRY_CIPHER_AES256, GCRY_CIPHER_MODE_CBC, GCRY_CIPHER_SECURE);
     size_t keyLength = gcry_cipher_get_algo_keylen(GCRY_CIPHER_AES256);
 
-    error = gcry_cipher_setkey(handle, password, keyLength);
+    error = gcry_cipher_setkey(handle, key, keyLength);
     printf("Result of keyset:  %d\n", error);
 
     char *iv = malloc(IV_LEN);
