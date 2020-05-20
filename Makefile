@@ -19,6 +19,9 @@ TEST_OUT = ./testOutput
 PERF_TEST = $(TEST_DIR)/memCheck.c
 PERF_EXE = ./memCheck
 
+# Run individual test cases.  Un-comment this to run specific testcase
+#export CK_RUN_CASE=Non-Happy Paths
+
 # Outputs
 OUTPUT_DIR = ./built
 OUTPUT_FILE = $(OUTPUT_DIR)/sfs_c_main
