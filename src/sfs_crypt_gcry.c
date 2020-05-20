@@ -1,6 +1,7 @@
 #include "sfs_crypt.h"
 #include <gcrypt.h>
 #include "sfs_about.h"
+#include "../dependencies/log.c/src/log.h"
 
 //  Initialization vectors are always 16 bytes long!
 #define IV_LEN 16
@@ -61,13 +62,24 @@ static void *derivePassword(char *password) {
 
 char * sfs_encrypt(char *data, char *password, int length){
 
+    //  Handle data padding
+    //  First get block length
+    int blockLength = gcry_cipher_get_algo_blklen(GCRY_CIPHER_AES256);
+    log_debug("Block length for AES=%d", blockLength);
+    int paddingNeeded = blockLength % length;
+    int outputLengthNeeded = length;
+    if(paddingNeeded != 0) {
+        log_error("Need to add %d bytes padding", paddingNeeded);
+        outputLengthNeeded += paddingNeeded;
+    }
+
     void *key = derivePassword(password);
 
     //  Based on code found here
     //  https://cboard.cprogramming.com/c-programming/105743-how-decrypt-encrypt-using-libgcrypt-arc4.html#post937372
     gcry_error_t error;
     char * txtBuffer = data;
-    char * encBuffer = malloc(length);
+    char * encBuffer = malloc(outputLengthNeeded);
 
     //  See also https://gnupg.org/documentation/manuals/gcrypt/Working-with-cipher-handles.html#Working-with-cipher-handles
     gcry_cipher_hd_t handle;
@@ -79,11 +91,11 @@ char * sfs_encrypt(char *data, char *password, int length){
     unsigned char *iv = gcry_random_bytes_secure(IV_LEN, GCRY_VERY_STRONG_RANDOM);
 
     error = gcry_cipher_setiv(handle, iv, 16);
-    error = gcry_cipher_encrypt(handle, encBuffer, length, txtBuffer, length);
+    error = gcry_cipher_encrypt(handle, encBuffer, outputLengthNeeded, txtBuffer, outputLengthNeeded);
 
-    char *finalProduct = malloc(length + IV_LEN);
+    char *finalProduct = malloc(outputLengthNeeded + IV_LEN);
     memcpy(&finalProduct[0], iv, IV_LEN);
-    memcpy(&finalProduct[IV_LEN], &encBuffer[0], length);
+    memcpy(&finalProduct[IV_LEN], &encBuffer[0], outputLengthNeeded);
     
     gcry_cipher_close(handle);
 
@@ -93,12 +105,21 @@ char * sfs_encrypt(char *data, char *password, int length){
 }
 
 char * sfs_decrypt(char *cipherText, char *password, int length) {
+
+    int blockLength = gcry_cipher_get_algo_blklen(GCRY_CIPHER_AES256);
+    log_debug("Block length for AES=%d", blockLength);
+    int paddingNeeded = blockLength % length;
+    int outputLengthNeeded = length;
+    if(paddingNeeded != 0) {
+        log_error("Need to add %d bytes padding", paddingNeeded);
+        outputLengthNeeded += paddingNeeded;
+    }
     
     void *key = derivePassword(password);
 
     gcry_error_t error;
 
-    char * outBuffer = malloc(length);
+    char * outBuffer = malloc(outputLengthNeeded);
 
     //  See also https://gnupg.org/documentation/manuals/gcrypt/Working-with-cipher-handles.html#Working-with-cipher-handles
     gcry_cipher_hd_t handle;
@@ -113,7 +134,7 @@ char * sfs_decrypt(char *cipherText, char *password, int length) {
 
     char *cipherTextProper = &cipherText[IV_LEN];
 
-    error = gcry_cipher_decrypt(handle, outBuffer, length, cipherTextProper, length);
+    error = gcry_cipher_decrypt(handle, outBuffer, outputLengthNeeded, cipherTextProper, outputLengthNeeded);
 
     gcry_cipher_close(handle);
 

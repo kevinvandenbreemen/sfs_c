@@ -56,16 +56,16 @@ START_TEST(TestEncryptsPlaintextOfNonOptimalLength) {
     char *plaintext = "hello world";    //  12 bytes (if you cound null char)
 
     char *cipherText = 
-        sfs_encrypt(plaintext, "one test AES keyone test AES key", 16);
+        sfs_encrypt(plaintext, "one test AES keyone test AES key", 11);
 
     printf("cipherText:  %s\n", cipherText);
-    sfs_bytes_debug("CipherText\n", cipherText, 16+IV_LEN, 0);
+    sfs_bytes_debug("CipherText\n", cipherText, 11+IV_LEN, 0);
 
     printf("Decrypting Now...\n");
-    char *outBuffer = sfs_decrypt(cipherText, "one test AES keyone test AES key", 16);
+    char *outBuffer = sfs_decrypt(cipherText, "one test AES keyone test AES key", 11);
 
     printf("OutBuff:  %s\n", outBuffer);
-    sfs_bytes_debug("Decrypted",outBuffer, 16, 0);
+    sfs_bytes_debug("Decrypted",outBuffer, 11, 0);
     fail_if(memcmp(outBuffer, plaintext, 11) != 0);
 }
 END_TEST
@@ -179,14 +179,17 @@ int main(int argc, char const *argv[])
     SRunner *runner = srunner_create(suite);
 
     TCase *case1 = tcase_create("Cipher Fiddling Around");
+    TCase *unhappy = tcase_create("Non-Happy Paths");
 
     tcase_add_test(case1, InitGCrypt);
     tcase_add_test(case1, OpenCipherHandle);
     tcase_add_test(case1, DoAESEncrypt);
     tcase_add_test(case1, DoATwoFishEncrypt);
     tcase_add_test(case1, KeyGeneration);
-    tcase_add_test(case1, TestEncryptsPlaintextOfNonOptimalLength);
     suite_add_tcase(suite, case1);
+
+    tcase_add_test(unhappy, TestEncryptsPlaintextOfNonOptimalLength);
+    suite_add_tcase(suite, unhappy);
 
     srunner_run_all(runner, CK_ENV);
 
