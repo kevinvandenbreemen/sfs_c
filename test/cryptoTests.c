@@ -51,6 +51,25 @@ START_TEST(DoAESEncrypt) {
 }
 END_TEST
 
+//  Cipher padding
+START_TEST(TestEncryptsPlaintextOfNonOptimalLength) {
+    char *plaintext = "hello world";    //  12 bytes (if you cound null char)
+
+    char *cipherText = 
+        sfs_encrypt(plaintext, "one test AES keyone test AES key", 16);
+
+    printf("cipherText:  %s\n", cipherText);
+    sfs_bytes_debug("CipherText\n", cipherText, 16+IV_LEN, 0);
+
+    printf("Decrypting Now...\n");
+    char *outBuffer = sfs_decrypt(cipherText, "one test AES keyone test AES key", 16);
+
+    printf("OutBuff:  %s\n", outBuffer);
+    sfs_bytes_debug("Decrypted",outBuffer, 16, 0);
+    fail_if(memcmp(outBuffer, plaintext, 11) != 0);
+}
+END_TEST
+
 START_TEST(DoATwoFishEncrypt) {
 
     gcry_error_t error;
@@ -166,6 +185,7 @@ int main(int argc, char const *argv[])
     tcase_add_test(case1, DoAESEncrypt);
     tcase_add_test(case1, DoATwoFishEncrypt);
     tcase_add_test(case1, KeyGeneration);
+    tcase_add_test(case1, TestEncryptsPlaintextOfNonOptimalLength);
     suite_add_tcase(suite, case1);
 
     srunner_run_all(runner, CK_ENV);
