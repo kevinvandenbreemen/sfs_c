@@ -29,7 +29,7 @@ static void *derivePasswordAES(char *password) {
     gcry_md_hd_t digest;
     err = gcry_md_open(&digest, GCRY_MD_SHA256, GCRY_MD_FLAG_SECURE);
     if (err != 0){
-        printf("%s\n", gcry_strerror(err));
+        log_fatal("AES Key Derivation:  %s\n", gcry_strerror(err));
         return NULL;
     }
 
@@ -37,7 +37,7 @@ static void *derivePasswordAES(char *password) {
     err = gcry_md_enable(digest, GCRY_MD_SHA3_256);
     
     if (err != 0){
-        printf("%s\n", gcry_strerror(err));
+        log_fatal("AES Key Derivation:  %s\n", gcry_strerror(err));
         return NULL;
     }
 
@@ -51,7 +51,7 @@ static void *derivePasswordAES(char *password) {
     err = gcry_kdf_derive(hashed, 32, GCRY_KDF_SCRYPT, GCRY_KDF_PBKDF2, salt, strlen(salt), 20, 32, generatedKey);
     
     if (err != 0){
-        printf("%s\n", gcry_strerror(err));
+        log_fatal("AES Key Derivation:  %s\n", gcry_strerror(err));
         return NULL;
     }
 
