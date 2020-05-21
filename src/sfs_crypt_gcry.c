@@ -2,17 +2,33 @@
 #include <gcrypt.h>
 #include "sfs_about.h"
 #include "../dependencies/log.c/src/log.h"
+#include "sfs_util.c"
 
 //  Initialization vectors are always 16 bytes long!
 #define IV_LEN 16
 
 #define GRYPT_VERSION "1.8.1"
+#define LOG_CTX "SFS_GCRY\t%s"
 
 #define AES 1
 #define TWF 2
 
 int sfs_startup() {
     const char *v = gcry_check_version(GRYPT_VERSION);
+
+    //  Initialize secure memory
+    gcry_error_t error;
+    error = gcry_control(GCRYCTL_INIT_SECMEM, 1000000, 0);
+    if(error != 0) {
+        log_fatal(LOG_CTX, gcry_strerror(error));
+        abort();
+    }
+
+    error = gcry_control (GCRYCTL_INITIALIZATION_FINISHED, 0);
+    if(error != 0) {
+        log_fatal(LOG_CTX, gcry_strerror(error));
+        abort();
+    }
 
     printf("%s\n%s\n", SFS_C_ABOUT, SFS_C_VERSION);
     printf("libgcrypt Version Check:  %s\n", v);
@@ -51,7 +67,7 @@ static void *derivePasswordAES(char *password) {
     //  Now derive key
     void *generatedKey = gcry_malloc_secure(32);
     char *salt = "abcdefghijklmno"; //  TODO    Generate
-    err = gcry_kdf_derive(hashed, 32, GCRY_KDF_SCRYPT, GCRY_KDF_PBKDF2, salt, strlen(salt), 20, 32, generatedKey);
+    err = gcry_kdf_derive(hashed, 32, GCRY_KDF_SCRYPT, GCRY_KDF_PBKDF2, salt, strlen(salt), 10, 32, generatedKey);
     
     if (err != 0){
         log_fatal("AES Key Derivation:  %s\n", gcry_strerror(err));
@@ -90,7 +106,7 @@ static void *derivePasswordTwoFish(char *password) {
     //  Now derive key
     void *generatedKey = gcry_malloc_secure(32);
     char *salt = "abcdefghijklmno"; //  TODO    Generate
-    err = gcry_kdf_derive(hashed, 32, GCRY_KDF_SCRYPT, GCRY_KDF_PBKDF2, salt, strlen(salt), 1000, 32, generatedKey);
+    err = gcry_kdf_derive(hashed, 32, GCRY_KDF_SCRYPT, GCRY_KDF_PBKDF2, salt, strlen(salt), 10, 32, generatedKey);
     
     if (err != 0){
         log_fatal("TwoFish Key Derivation:  %s\n", gcry_strerror(err));
@@ -160,7 +176,12 @@ static char* doEncrypt(int cipherType, char *data, char *password, int length) {
 }
 
 char * sfs_encrypt(char *data, char *password, int length){
-    return doEncrypt(AES, data, password, length);
+    sfs_bytes_debug("B4Encrypt PLAIN", data, length, 0);
+    char * temp = doEncrypt(TWF, data, password, length);
+    sfs_bytes_debug("TwoFish Encrypted", temp, length+IV_LEN, 0);
+    temp = doEncrypt(AES, temp, password, length + IV_LEN);
+    sfs_bytes_debug("AES Encrypted", temp, length+IV_LEN+IV_LEN, 0);
+    return temp;
 }
 
 static char* doDecrypt(int cipherType, char *cipherText, char *password, int length) {
@@ -212,5 +233,9 @@ static char* doDecrypt(int cipherType, char *cipherText, char *password, int len
 }
 
 char * sfs_decrypt(char *cipherText, char *password, int length) {
-    return doDecrypt(AES, cipherText, password, length);
+    char *temp = doDecrypt(AES, cipherText, password, length + IV_LEN);   //  (IV for AES + IV for TwoFish)
+    sfs_bytes_debug("AES Decrypted", temp, length+IV_LEN, 0);
+    temp = doDecrypt(TWF, temp, password, length);
+    sfs_bytes_debug("TwoFish Decrypted", temp, length, 0);
+    return temp;
 }
