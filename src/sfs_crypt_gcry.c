@@ -8,6 +8,9 @@
 
 #define GRYPT_VERSION "1.8.1"
 
+#define AES 1
+#define TWF 2
+
 int sfs_startup() {
     const char *v = gcry_check_version(GRYPT_VERSION);
 
@@ -22,7 +25,7 @@ int sfs_startup() {
 }
 
 /**
- * Perform key stretching/derivation to convert the given password into a key for encryption
+ * Perform key stretching/derivation to convert the given password into a key for encryption for AES
  */
 static void *derivePasswordAES(char *password) {
     gcry_error_t err;
@@ -60,7 +63,46 @@ static void *derivePasswordAES(char *password) {
     return generatedKey;
 }
 
-char * sfs_encrypt(char *data, char *password, int length){
+/**
+ * Perform key stretching/derivation to convert the given password into a key for encryption for AES
+ */
+static void *derivePasswordTwoFish(char *password) {
+    gcry_error_t err;
+    gcry_md_hd_t digest;
+    err = gcry_md_open(&digest, GCRY_MD_SHA256, GCRY_MD_FLAG_SECURE);
+    if (err != 0){
+        log_fatal("TwoFish Key Derivation:  %s\n", gcry_strerror(err));
+        return NULL;
+    }
+
+    //  Add additional algorithm, SHA3:
+    err = gcry_md_enable(digest, GCRY_MD_SHA3_256);
+    
+    if (err != 0){
+        log_fatal("TwoFish Key Derivation:  %s\n", gcry_strerror(err));
+        return NULL;
+    }
+
+    gcry_md_write(digest, password, strlen(password));
+
+    void *hashed = gcry_md_read(digest, GCRY_MD_SHA256);
+
+    //  Now derive key
+    void *generatedKey = gcry_malloc_secure(32);
+    char *salt = "abcdefghijklmno"; //  TODO    Generate
+    err = gcry_kdf_derive(hashed, 32, GCRY_KDF_SCRYPT, GCRY_KDF_PBKDF2, salt, strlen(salt), 1000, 32, generatedKey);
+    
+    if (err != 0){
+        log_fatal("TwoFish Key Derivation:  %s\n", gcry_strerror(err));
+        return NULL;
+    }
+
+    gcry_md_close(digest);
+
+    return generatedKey;
+}
+
+static char* doEncrypt(int cipherType, char *data, char *password, int length) {
 
     //  Handle data padding
     //  First get block length
@@ -102,6 +144,10 @@ char * sfs_encrypt(char *data, char *password, int length){
     free(encBuffer);
 
     return finalProduct;
+}
+
+char * sfs_encrypt(char *data, char *password, int length){
+    return doEncrypt(AES, data, password, length);
 }
 
 char * sfs_decrypt(char *cipherText, char *password, int length) {
