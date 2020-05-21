@@ -24,7 +24,7 @@ int sfs_startup() {
 /**
  * Perform key stretching/derivation to convert the given password into a key for encryption
  */
-static void *derivePassword(char *password) {
+static void *derivePasswordAES(char *password) {
     gcry_error_t err;
     gcry_md_hd_t digest;
     err = gcry_md_open(&digest, GCRY_MD_SHA256, GCRY_MD_FLAG_SECURE);
@@ -73,7 +73,7 @@ char * sfs_encrypt(char *data, char *password, int length){
         outputLengthNeeded += paddingNeeded;
     }
 
-    void *key = derivePassword(password);
+    void *key = derivePasswordAES(password);
 
     //  Based on code found here
     //  https://cboard.cprogramming.com/c-programming/105743-how-decrypt-encrypt-using-libgcrypt-arc4.html#post937372
@@ -115,7 +115,7 @@ char * sfs_decrypt(char *cipherText, char *password, int length) {
         outputLengthNeeded += paddingNeeded;
     }
     
-    void *key = derivePassword(password);
+    void *key = derivePasswordAES(password);
 
     gcry_error_t error;
 
