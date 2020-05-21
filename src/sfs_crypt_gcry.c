@@ -115,7 +115,20 @@ static char* doEncrypt(int cipherType, char *data, char *password, int length) {
         outputLengthNeeded += paddingNeeded;
     }
 
-    void *key = derivePasswordAES(password);
+    void *key;
+    if(cipherType == AES) {
+        key = derivePasswordAES(password);
+    } else {
+        key = derivePasswordTwoFish(password);
+    }
+
+    int gcry_cipherType;
+    if(cipherType == AES) {
+        gcry_cipherType = GCRY_CIPHER_AES256;
+    } else {
+        gcry_cipherType = GCRY_CIPHER_TWOFISH;
+    }
+
 
     //  Based on code found here
     //  https://cboard.cprogramming.com/c-programming/105743-how-decrypt-encrypt-using-libgcrypt-arc4.html#post937372
@@ -125,8 +138,8 @@ static char* doEncrypt(int cipherType, char *data, char *password, int length) {
 
     //  See also https://gnupg.org/documentation/manuals/gcrypt/Working-with-cipher-handles.html#Working-with-cipher-handles
     gcry_cipher_hd_t handle;
-    error = gcry_cipher_open(&handle, GCRY_CIPHER_AES256, GCRY_CIPHER_MODE_CBC, GCRY_CIPHER_SECURE);
-    size_t keyLength = gcry_cipher_get_algo_keylen(GCRY_CIPHER_AES256);
+    error = gcry_cipher_open(&handle, gcry_cipherType, GCRY_CIPHER_MODE_CBC, GCRY_CIPHER_SECURE);
+    size_t keyLength = gcry_cipher_get_algo_keylen(gcry_cipherType);
     error = gcry_cipher_setkey(handle, key, keyLength);
 
     //  See also https://www.gnupg.org/(es)/documentation/manuals/gcrypt/Random-Numbers.html#Random-Numbers
@@ -150,7 +163,7 @@ char * sfs_encrypt(char *data, char *password, int length){
     return doEncrypt(AES, data, password, length);
 }
 
-char * sfs_decrypt(char *cipherText, char *password, int length) {
+static char* doDecrypt(int cipherType, char *cipherText, char *password, int length) {
 
     int blockLength = gcry_cipher_get_algo_blklen(GCRY_CIPHER_AES256);
     log_debug("Block length for AES=%d", blockLength);
@@ -185,4 +198,8 @@ char * sfs_decrypt(char *cipherText, char *password, int length) {
     gcry_cipher_close(handle);
 
     return outBuffer;
+}
+
+char * sfs_decrypt(char *cipherText, char *password, int length) {
+    return doDecrypt(AES, cipherText, password, length);
 }
