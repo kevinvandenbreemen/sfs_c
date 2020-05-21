@@ -118,11 +118,16 @@ static void *derivePasswordTwoFish(char *password) {
     return generatedKey;
 }
 
-static char* doEncrypt(int cipherType, char *data, char *password, int length) {
+static int calculateOutputLengthNeeded(int cipherType, int length) {
 
-    //  Handle data padding
-    //  First get block length
-    int blockLength = gcry_cipher_get_algo_blklen(GCRY_CIPHER_AES256);
+    int gcry_cipherType;
+    if(cipherType == AES){
+        gcry_cipherType = GCRY_CIPHER_AES256;
+    } else {
+        gcry_cipherType = GCRY_CIPHER_TWOFISH;
+    }
+
+    int blockLength = gcry_cipher_get_algo_blklen(gcry_cipherType);
     log_debug("Block length for AES=%d", blockLength);
     int paddingNeeded = blockLength % length;
     int outputLengthNeeded = length;
@@ -130,6 +135,13 @@ static char* doEncrypt(int cipherType, char *data, char *password, int length) {
         log_error("Need to add %d bytes padding", paddingNeeded);
         outputLengthNeeded += paddingNeeded;
     }
+
+    return outputLengthNeeded;
+}
+
+static char* doEncrypt(int cipherType, char *data, char *password, int length) {
+
+    int outputLengthNeeded = calculateOutputLengthNeeded(cipherType, length);
 
     void *key;
     if(cipherType == AES) {
@@ -200,14 +212,8 @@ static char* doDecrypt(int cipherType, char *cipherText, char *password, int len
         gcry_cipherType = GCRY_CIPHER_TWOFISH;
     }
 
-    int blockLength = gcry_cipher_get_algo_blklen(GCRY_CIPHER_AES256);
-    log_debug("Block length for cipher=%d", blockLength);
-    int paddingNeeded = blockLength % length;
-    int outputLengthNeeded = length;
-    if(paddingNeeded != 0) {
-        log_error("Need to add %d bytes padding", paddingNeeded);
-        outputLengthNeeded += paddingNeeded;
-    }
+    int outputLengthNeeded = calculateOutputLengthNeeded(cipherType, length);
+    
     gcry_error_t error;
 
     char * outBuffer = malloc(outputLengthNeeded);
