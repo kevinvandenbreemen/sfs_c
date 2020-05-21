@@ -165,25 +165,36 @@ char * sfs_encrypt(char *data, char *password, int length){
 
 static char* doDecrypt(int cipherType, char *cipherText, char *password, int length) {
 
+    void *key;
+    if(cipherType == AES) {
+        key = derivePasswordAES(password);
+    } else {
+        key = derivePasswordTwoFish(password);
+    }
+
+    int gcry_cipherType;
+    if(cipherType == AES) {
+        gcry_cipherType = GCRY_CIPHER_AES256;
+    } else {
+        gcry_cipherType = GCRY_CIPHER_TWOFISH;
+    }
+
     int blockLength = gcry_cipher_get_algo_blklen(GCRY_CIPHER_AES256);
-    log_debug("Block length for AES=%d", blockLength);
+    log_debug("Block length for cipher=%d", blockLength);
     int paddingNeeded = blockLength % length;
     int outputLengthNeeded = length;
     if(paddingNeeded != 0) {
         log_error("Need to add %d bytes padding", paddingNeeded);
         outputLengthNeeded += paddingNeeded;
     }
-    
-    void *key = derivePasswordAES(password);
-
     gcry_error_t error;
 
     char * outBuffer = malloc(outputLengthNeeded);
 
     //  See also https://gnupg.org/documentation/manuals/gcrypt/Working-with-cipher-handles.html#Working-with-cipher-handles
     gcry_cipher_hd_t handle;
-    error = gcry_cipher_open(&handle, GCRY_CIPHER_AES256, GCRY_CIPHER_MODE_CBC, GCRY_CIPHER_SECURE);
-    size_t keyLength = gcry_cipher_get_algo_keylen(GCRY_CIPHER_AES256);
+    error = gcry_cipher_open(&handle, gcry_cipherType, GCRY_CIPHER_MODE_CBC, GCRY_CIPHER_SECURE);
+    size_t keyLength = gcry_cipher_get_algo_keylen(gcry_cipherType);
 
     error = gcry_cipher_setkey(handle, key, keyLength);
 
