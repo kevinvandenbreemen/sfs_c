@@ -179,14 +179,16 @@ int main(int argc, char const *argv[])
     SRunner *runner = srunner_create(suite);
 
     TCase *case1 = tcase_create("Cipher Fiddling Around");
+    TCase *happy = tcase_create("Happy Paths");
     TCase *unhappy = tcase_create("Non-Happy Paths");
 
-    tcase_add_test(case1, InitGCrypt);
+    tcase_add_test(happy, InitGCrypt);
     tcase_add_test(case1, OpenCipherHandle);
-    tcase_add_test(case1, DoAESEncrypt);
+    tcase_add_test(happy, DoAESEncrypt);
     tcase_add_test(case1, DoATwoFishEncrypt);
     tcase_add_test(case1, KeyGeneration);
     suite_add_tcase(suite, case1);
+    suite_add_tcase(suite, happy);
 
     tcase_add_test(unhappy, TestEncryptsPlaintextOfNonOptimalLength);
     suite_add_tcase(suite, unhappy);
