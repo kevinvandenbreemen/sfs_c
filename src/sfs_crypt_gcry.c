@@ -189,10 +189,13 @@ static char* doEncrypt(int cipherType, char *data, char *password, int length) {
 
 char * sfs_encrypt(char *data, char *password, int length){
     sfs_bytes_debug("B4Encrypt PLAIN", data, length, 0);
+
+    int expectedLengthNeeded = calculateOutputLengthNeeded(TWF, length);
+
     char * temp = doEncrypt(TWF, data, password, length);
-    sfs_bytes_debug("TwoFish Encrypted", temp, length+IV_LEN, 0);
-    temp = doEncrypt(AES, temp, password, length + IV_LEN);
-    sfs_bytes_debug("AES Encrypted", temp, length+IV_LEN+IV_LEN, 0);
+    sfs_bytes_debug("TwoFish Encrypted", temp, expectedLengthNeeded+IV_LEN, 0);
+    temp = doEncrypt(AES, temp, password, expectedLengthNeeded + IV_LEN);
+    sfs_bytes_debug("AES Encrypted", temp, expectedLengthNeeded+IV_LEN+IV_LEN, 0);
     return temp;
 }
 
@@ -239,8 +242,14 @@ static char* doDecrypt(int cipherType, char *cipherText, char *password, int len
 }
 
 char * sfs_decrypt(char *cipherText, char *password, int length) {
-    char *temp = doDecrypt(AES, cipherText, password, length + IV_LEN);   //  (IV for AES + IV for TwoFish)
-    sfs_bytes_debug("AES Decrypted", temp, length+IV_LEN, 0);
+
+    int expectedLengthNeeded = calculateOutputLengthNeeded(TWF, length);
+
+    char *temp = doDecrypt(AES, cipherText, password, expectedLengthNeeded + IV_LEN);   //  (IV for AES + IV for TwoFish)
+
+    
+
+    sfs_bytes_debug("AES Decrypted", temp, expectedLengthNeeded+IV_LEN, 0);
     temp = doDecrypt(TWF, temp, password, length);
     sfs_bytes_debug("TwoFish Decrypted", temp, length, 0);
     return temp;

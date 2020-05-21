@@ -20,7 +20,7 @@ PERF_TEST = $(TEST_DIR)/memCheck.c
 PERF_EXE = ./memCheck
 
 # Run individual test cases.  Un-comment this to run specific testcase
-export CK_RUN_CASE=Happy Paths
+#export CK_RUN_CASE=Non-Happy Paths
 
 # Outputs
 OUTPUT_DIR = ./built
