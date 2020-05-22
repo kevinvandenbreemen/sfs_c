@@ -68,7 +68,7 @@ static void *derivePasswordAES(char *password) {
     //  Now derive key
     void *generatedKey = gcry_malloc_secure(32);
     char *salt = "abcdefghijklmno"; //  TODO    Generate
-    err = gcry_kdf_derive(hashed, 32, GCRY_KDF_SCRYPT, 100, salt, strlen(salt), 4, 32, generatedKey);
+    err = gcry_kdf_derive(hashed, 32, GCRY_KDF_SCRYPT, 100, salt, strlen(salt), 10, 32, generatedKey);
     
     if (err != 0){
         log_fatal("AES Key Derivation:  %s\n", gcry_strerror(err));
