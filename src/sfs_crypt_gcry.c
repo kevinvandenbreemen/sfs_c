@@ -7,6 +7,7 @@
 //  Initialization vectors are always 16 bytes long!
 #define IV_LEN 16
 
+#define SECMEM_ALLOCATED 1000000
 #define GRYPT_VERSION "1.8.1"
 #define LOG_CTX "SFS_GCRY\t%s"
 
@@ -18,7 +19,7 @@ int sfs_startup() {
 
     //  Initialize secure memory
     gcry_error_t error;
-    error = gcry_control(GCRYCTL_INIT_SECMEM, 1000000, 0);
+    error = gcry_control(GCRYCTL_INIT_SECMEM, SECMEM_ALLOCATED, 0);
     if(error != 0) {
         log_fatal(LOG_CTX, gcry_strerror(error));
         abort();
@@ -67,7 +68,7 @@ static void *derivePasswordAES(char *password) {
     //  Now derive key
     void *generatedKey = gcry_malloc_secure(32);
     char *salt = "abcdefghijklmno"; //  TODO    Generate
-    err = gcry_kdf_derive(hashed, 32, GCRY_KDF_SCRYPT, GCRY_KDF_PBKDF2, salt, strlen(salt), 10, 32, generatedKey);
+    err = gcry_kdf_derive(hashed, 32, GCRY_KDF_SCRYPT, 100, salt, strlen(salt), 4, 32, generatedKey);
     
     if (err != 0){
         log_fatal("AES Key Derivation:  %s\n", gcry_strerror(err));
@@ -106,7 +107,7 @@ static void *derivePasswordTwoFish(char *password) {
     //  Now derive key
     void *generatedKey = gcry_malloc_secure(32);
     char *salt = "abcdefghijklmno"; //  TODO    Generate
-    err = gcry_kdf_derive(hashed, 32, GCRY_KDF_SCRYPT, GCRY_KDF_PBKDF2, salt, strlen(salt), 10, 32, generatedKey);
+    err = gcry_kdf_derive(hashed, 32, GCRY_KDF_SCRYPT, 100, salt, strlen(salt), 4, 32, generatedKey);
     
     if (err != 0){
         log_fatal("TwoFish Key Derivation:  %s\n", gcry_strerror(err));

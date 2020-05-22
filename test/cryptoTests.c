@@ -187,8 +187,9 @@ int main(int argc, char const *argv[])
     tcase_add_test(happy, DoAESEncrypt);
     tcase_add_test(case1, DoATwoFishEncrypt);
     tcase_add_test(case1, KeyGeneration);
-    suite_add_tcase(suite, case1);
     suite_add_tcase(suite, happy);
+    suite_add_tcase(suite, case1);
+    
 
     tcase_add_test(unhappy, TestEncryptsPlaintextOfNonOptimalLength);
     suite_add_tcase(suite, unhappy);
