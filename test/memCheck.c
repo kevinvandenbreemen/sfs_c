@@ -42,10 +42,11 @@ int main(int argc, char const *argv[])
     char *string = "HelloWorld To Encrypt";
     void *encrypted = sfs_encrypt(string, "test", strlen(string));
 
-    // char *decrypted = sfs_decrypt(encrypted, "test", strlen(string));
-    // printf("Decrypted:  %s\n", decrypted);
+    char *decrypted = sfs_decrypt(encrypted, "test", strlen(string));
+    printf("Decrypted:  %s\n", decrypted);
 
     free(encrypted);
+    free(decrypted);
 
     return 0;
 }

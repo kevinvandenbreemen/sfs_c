@@ -227,7 +227,7 @@ static char* doDecrypt(int cipherType, char *cipherText, char *password, int len
     
     gcry_error_t error;
 
-    char * outBuffer = malloc(outputLengthNeeded);
+    char * outBuffer = calloc(outputLengthNeeded, sizeof(char));
 
     //  See also https://gnupg.org/documentation/manuals/gcrypt/Working-with-cipher-handles.html#Working-with-cipher-handles
     gcry_cipher_hd_t handle;
@@ -245,6 +245,7 @@ static char* doDecrypt(int cipherType, char *cipherText, char *password, int len
     error = gcry_cipher_decrypt(handle, outBuffer, outputLengthNeeded, cipherTextProper, outputLengthNeeded);
 
     gcry_cipher_close(handle);
+    free(iv);
 
     return outBuffer;
 }
