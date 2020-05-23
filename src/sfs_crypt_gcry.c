@@ -193,9 +193,16 @@ char * sfs_encrypt(char *data, char *password, int length){
 
     int expectedLengthNeeded = calculateOutputLengthNeeded(TWF, length);
 
+    char *memAddr;
+
     char * temp = doEncrypt(TWF, data, password, length);
+    memAddr = temp;
+
     sfs_bytes_debug("TwoFish Encrypted", temp, expectedLengthNeeded+IV_LEN, 0);
     temp = doEncrypt(AES, temp, password, expectedLengthNeeded + IV_LEN);
+
+    free(memAddr);
+
     sfs_bytes_debug("AES Encrypted", temp, expectedLengthNeeded+IV_LEN+IV_LEN, 0);
     return temp;
 }
@@ -246,12 +253,16 @@ char * sfs_decrypt(char *cipherText, char *password, int length) {
 
     int expectedLengthNeeded = calculateOutputLengthNeeded(TWF, length);
 
-    char *temp = doDecrypt(AES, cipherText, password, expectedLengthNeeded + IV_LEN);   //  (IV for AES + IV for TwoFish)
+    char *memAddr;
 
-    
+    char *temp = doDecrypt(AES, cipherText, password, expectedLengthNeeded + IV_LEN);   //  (IV for AES + IV for TwoFish)
+    memAddr = temp;
 
     sfs_bytes_debug("AES Decrypted", temp, expectedLengthNeeded+IV_LEN, 0);
     temp = doDecrypt(TWF, temp, password, length);
+
+    free(memAddr);
+
     sfs_bytes_debug("TwoFish Decrypted", temp, length, 0);
     return temp;
 }

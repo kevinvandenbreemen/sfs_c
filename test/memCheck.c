@@ -1,5 +1,7 @@
 #include "../src/sfs_c.h"
 #include "../src/sfs_crypt.h"
+
+#include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -37,7 +39,13 @@ int main(int argc, char const *argv[])
     //  Crypto Tests
     sfs_startup();
 
-    
+    char *string = "HelloWorld To Encrypt";
+    void *encrypted = sfs_encrypt(string, "test", strlen(string));
+
+    // char *decrypted = sfs_decrypt(encrypted, "test", strlen(string));
+    // printf("Decrypted:  %s\n", decrypted);
+
+    free(encrypted);
 
     return 0;
 }
