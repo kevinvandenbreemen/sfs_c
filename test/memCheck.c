@@ -1,4 +1,5 @@
 #include "../src/sfs_c.h"
+#include "../src/sfs_crypt.h"
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -32,6 +33,11 @@ int main(int argc, char const *argv[])
     cf = sfs_createChunkedFile("testOutput/perftestWriteChunk");
     sfs_writeChunk(cf, 0, "writeCHUNK", 10);
     free(cf);
+
+    //  Crypto Tests
+    sfs_startup();
+
+    
 
     return 0;
 }

@@ -9,7 +9,9 @@ DEP_ALL_OBJ_FILES = $(DEP_BIN_LOG)
 SOURCE_DIR = ./src
 MAIN_FILE = $(SOURCE_DIR)/sfs_c_main.c
 OBJ_COMPILE = $(SOURCE_DIR)/sfs_c.c
+CRY_COMPILE = $(SOURCE_DIR)/sfs_crypt_gcry.c
 OBJ_FILE = ./sfs_c.o
+OBJ_GCRY = ./sfs_c_gcry.o
 
 # Testing
 TEST_DIR = ./test
@@ -31,6 +33,7 @@ OUTPUT_FILE = $(OUTPUT_DIR)/sfs_c_main
 build: clean dependencies
 	mkdir $(OUTPUT_DIR)
 	gcc -Wall -o $(OBJ_FILE) -c $(OBJ_COMPILE) $(DEP_ALL_OBJ_FILES)
+	gcc -Wall -o $(OBJ_GCRY) -c $(CRY_COMPILE) $(DEP_ALL_OBJ_FILES)
 	gcc -Wall -o $(OUTPUT_FILE) $(MAIN_FILE) $(DEP_ALL_OBJ_FILES)
 	$(OUTPUT_FILE)
 
@@ -59,6 +62,6 @@ test: build
 	./runTests
 
 memCheck: build
-	gcc $(PERF_TEST) -Wall -g -o $(PERF_EXE) $(OBJ_COMPILE) -lcheck -lm -lpthread -lrt  -lm -lsubunit
+	gcc $(PERF_TEST) -Wall -g -o $(PERF_EXE) $(OBJ_COMPILE) $(OBJ_GCRY) $(DEP_ALL_OBJ_FILES) `libgcrypt-config --libs` -lcheck -lm -lpthread -lrt  -lm -lsubunit
 	@mkdir $(TEST_OUT)
 	valgrind --leak-check=yes --track-origins=yes $(PERF_EXE)
