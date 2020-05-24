@@ -137,6 +137,50 @@ START_TEST(WriteChunkToSecondSegmentInFile) {
 }
 END_TEST
 
+START_TEST(WriteChunkToThirdSegmentInFile) {
+
+    char *filePath = "testOutput/writeThirdChunkToFile";
+    ChunkedFile *cf = sfs_createChunkedFile(filePath);
+    cf->unitSize = 50;  //  Shorten unit size to make it easier to test
+
+    char *expectedData = "writeCHUNK";
+
+    sfs_writeChunk(cf, 2, "writeCHUNK", 10);
+
+    cf = sfs_openChunkedFile(filePath);
+    cf->unitSize = 50;  //  Shorten unit size to make it easier to test
+
+    char *readIn = sfs_readChunk(cf, 2);
+
+    fail_unless(memcmp(expectedData, readIn, 10) == 0, "Failed to read chunk from segment beyond first segment");
+
+}
+END_TEST
+
+START_TEST(WriteChunksToSecondAndThirdSegmentInFile) {
+
+    char *filePath = "testOutput/writeSecondAndThirdChunkToFile";
+    ChunkedFile *cf = sfs_createChunkedFile(filePath);
+    cf->unitSize = 50;  //  Shorten unit size to make it easier to test
+
+    char *expectedData = "writeCHUNK";
+
+    sfs_writeChunk(cf, 1, "Intermediary Chunk of Greatness", strlen("Intermediary Chunk of Greatness"));
+    sfs_writeChunk(cf, 2, "writeCHUNK", 10);
+
+    cf = sfs_openChunkedFile(filePath);
+    cf->unitSize = 50;  //  Shorten unit size to make it easier to test
+
+    char *readIn = sfs_readChunk(cf, 2);
+
+    fail_unless(memcmp(expectedData, readIn, 10) == 0, "Failed to read chunk from segment beyond first segment");
+
+    char *secondChunk = sfs_readChunk(cf, 1);
+    fail_if(memcmp(secondChunk, "Intermediary Chunk of Greatness", strlen("Intermediary Chunk of Greatness")) != 0);
+
+}
+END_TEST
+
 int main(void)
 {
     Suite *suite = suite_create("Chunked File Management");
@@ -149,7 +193,7 @@ int main(void)
 
     TCase *createOpen = tcase_create("Create/Open");
 
-    TCase *chunks = tcase_create("Chunks");
+    TCase *chunks = tcase_create("Chunk Tests");
 
     tcase_add_test(createOpen, CreateSFS);
     tcase_add_test(createOpen, AddsSignatureToNewFile);
@@ -159,6 +203,8 @@ int main(void)
     tcase_add_test(chunks, ReadChunkFromFile);
     tcase_add_test(chunks, WriteChunkToFile);
     tcase_add_test(chunks, WriteChunkToSecondSegmentInFile);
+    tcase_add_test(chunks, WriteChunkToThirdSegmentInFile);
+    tcase_add_test(chunks, WriteChunksToSecondAndThirdSegmentInFile);
     suite_add_tcase(suite, createOpen);
     suite_add_tcase(suite, chunks);
 
