@@ -148,15 +148,19 @@ int main(void)
     suite_add_tcase(suite, case1);
 
     TCase *createOpen = tcase_create("Create/Open");
+
+    TCase *chunks = tcase_create("Chunks");
+
     tcase_add_test(createOpen, CreateSFS);
     tcase_add_test(createOpen, AddsSignatureToNewFile);
     tcase_add_test(createOpen, AddsMessageToFile);
     tcase_add_test(createOpen, OverwriteMessageInFile);
     tcase_add_test(createOpen, OpenChunkedFile);
-    tcase_add_test(createOpen, ReadChunkFromFile);
-    tcase_add_test(createOpen, WriteChunkToFile);
-    tcase_add_test(createOpen, WriteChunkToSecondSegmentInFile);
+    tcase_add_test(chunks, ReadChunkFromFile);
+    tcase_add_test(chunks, WriteChunkToFile);
+    tcase_add_test(chunks, WriteChunkToSecondSegmentInFile);
     suite_add_tcase(suite, createOpen);
+    suite_add_tcase(suite, chunks);
 
     srunner_run_all(runner, CK_ENV);
 
