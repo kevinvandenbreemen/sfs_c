@@ -41,7 +41,7 @@ build: clean dependencies
 	$(OUTPUT_FILE)
 
 enableDebug:
-	$(eval GCC_FLAGS = -DSFS_DEBUG)
+	$(eval GCC_FLAGS = -DSFS_DEBUG -g)
 
 # Build the code with SFS_DEBUG macro enabled 
 debugBuild: enableDebug build
