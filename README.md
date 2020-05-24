@@ -31,7 +31,7 @@ Tests of internal utility functions
 
 ### Memory/Performance Tests
 #### memCheck.c
-A basic sanity testing program that utilizes the library.  This program should be run using a memory checking tool like ][valgrind](https://valgrind.org/).
+A basic sanity testing program that utilizes the library.  This program should be run using a memory checking tool like [valgrind](https://valgrind.org/).
 
 # SFS Specification Basics
 ## Chunk Format
