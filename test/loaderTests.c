@@ -63,7 +63,7 @@ START_TEST(OverwriteMessageInFile) {
     sfs_getMessage(cf);
 
     fail_if(cf->message == NULL, "System should have read in message");
-    fail_if(memcmp(updated, cf->message, sizeof(updated)) != 0, "Expected message not found");
+    fail_if(memcmp(updated, cf->message, strlen(updated)) != 0, "Expected message not found");
 
     fail_if(sfs_checkIsSFS(filePath) != 1, "Updated file should still be an SFS");
 

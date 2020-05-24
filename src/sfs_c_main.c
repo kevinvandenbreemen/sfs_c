@@ -10,6 +10,10 @@ int main(int argc, char const *argv[]) {
     log_info("SFS C Library v. %s", SFS_C_VERSION);
     log_info("**************************");
 
+    #ifdef SFS_DEBUG
+    log_warn("THIS BUILD WITH DEBUGGING ENABLED");
+    #endif
+
     return 0;
 
 }

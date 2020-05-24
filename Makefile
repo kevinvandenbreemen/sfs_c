@@ -28,14 +28,23 @@ PERF_EXE = ./memCheck
 OUTPUT_DIR = ./built
 OUTPUT_FILE = $(OUTPUT_DIR)/sfs_c_main
 
-.PHONY: clean build test memCheck dependencies
+# Compilation
+GCC_FLAGS =
+
+.PHONY: clean build test memCheck dependencies enableDebug debugBuild
 
 build: clean dependencies
 	mkdir $(OUTPUT_DIR)
-	gcc -Wall -o $(OBJ_FILE) -c $(OBJ_COMPILE) $(DEP_ALL_OBJ_FILES)
-	gcc -Wall -o $(OUTPUT_FILE) $(MAIN_FILE) $(DEP_ALL_OBJ_FILES)
+	gcc -Wall $(GCC_FLAGS) -o $(OBJ_FILE) -c $(OBJ_COMPILE) $(DEP_ALL_OBJ_FILES)
+	gcc -Wall $(GCC_FLAGS) -o $(OUTPUT_FILE) $(MAIN_FILE) $(DEP_ALL_OBJ_FILES)
 
 	$(OUTPUT_FILE)
+
+enableDebug:
+	$(eval GCC_FLAGS = -DSFS_DEBUG)
+
+# Build the code with SFS_DEBUG macro enabled 
+debugBuild: enableDebug build
 
 # Pull in dependencies that the product requires
 dependencies:
@@ -48,7 +57,7 @@ clean:
 	-rm -rf $(TEST_OUT)
 	-rm -rf $(DEP_DIR)
 
-test: build
+test: debugBuild
 	gcc $(TEST_FILE) -Wall -o $(TEST_EXE) $(OBJ_FILE) $(DEP_ALL_OBJ_FILES) -lcheck -lm -lpthread -lrt  -lm -lsubunit
 	@mkdir $(TEST_OUT)
 	./runTests
@@ -58,7 +67,7 @@ test: build
 
 	# See also https://gnupg.org/documentation/manuals/gcrypt/Building-sources.html#Building-sources regarding libgcrypt-config command
 	# and why it's needed in order for this to build
-	gcc -g -DSFS_DEBUG $(TEST_DIR)/cryptoTests.c `libgcrypt-config --libs` -Wall -o $(TEST_EXE) $(DEP_ALL_OBJ_FILES) -lcheck -lm -lpthread -lrt  -lm -lsubunit
+	gcc $(GCC_FLAGS) -g $(TEST_DIR)/cryptoTests.c `libgcrypt-config --libs` -Wall -o $(TEST_EXE) $(DEP_ALL_OBJ_FILES) -lcheck -lm -lpthread -lrt  -lm -lsubunit
 	./runTests
 
 memCheck: build
