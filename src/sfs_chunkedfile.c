@@ -6,6 +6,7 @@ Chunked File System implementation
 #include "sfs_chunkedfile.h"
 #include "sfs_control.h"
 #include "../dependencies/log.c/src/log.h"
+#include "sfs_util.c"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -147,6 +148,11 @@ char *readChunk(char *data) {
     }
 
     long long length = bytesToLong(data + 2);
+
+    #ifdef SFS_DEBUG
+    log_debug("Chunk length ind=%ld", length);
+    #endif
+
     char *readInData = malloc((int)length * sizeof(char));  //  Allocate length bytes to a new byte array for return
 
     //  Read in the content proper
@@ -225,6 +231,12 @@ char *sfs_readChunk(ChunkedFile *chunkedFile, long long atIndex) {
     index += (atIndex * chunkedFile->unitSize);
 
     char *chunkData = readBytesInternal(chunkedFile, index, (long)chunkedFile->unitSize);
+
+    #ifdef SFS_DEBUG
+    log_debug("Read chunk %d", atIndex);
+    sfs_bytes_debug("Raw Chunk Data", chunkData, chunkedFile->unitSize, 0);
+    #endif
+
     char *payload = readChunk(chunkData);
     free(chunkData);
 
@@ -238,6 +250,11 @@ void sfs_writeChunk(ChunkedFile *chunkedFile, long long atIndex, char *data, int
 
     long long len = (long long)length;
     char *chunk = encodeChunk(data, len);
+
+    #ifdef SFS_DEBUG
+    log_debug("Encode chunk at index %d", atIndex);
+    sfs_bytes_debug("Encoded Chunk", chunk, len+11, 0);
+    #endif
 
     writeBytesInternal(chunkedFile, index, chunk, len + 11);
 
