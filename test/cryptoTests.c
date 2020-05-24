@@ -11,6 +11,8 @@ libgcrypt20-dev
 #include <check.h>
 
 #include "../src/sfs_crypt.h"
+#include "../src/sfs_util.h"
+
 #define IV_LEN 16
 
 START_TEST(InitGCrypt) {

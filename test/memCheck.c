@@ -1,5 +1,6 @@
 #include "../src/sfs_chunkedfile.h"
 #include "../src/sfs_crypt.h"
+#include "../src/sfs_util.h"
 
 #include <string.h>
 #include <stdlib.h>
