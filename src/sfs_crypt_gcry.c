@@ -3,6 +3,7 @@
 #include "sfs_about.h"
 #include "../dependencies/log.c/src/log.h"
 #include "sfs_util.c"
+#include <math.h>
 
 //  Initialization vectors are always 16 bytes long!
 #define IV_LEN 16
@@ -10,12 +11,14 @@
 #define SECMEM_ALLOCATED 1000000
 #define GRYPT_VERSION "1.8.1"
 #define LOG_CTX "SFS_GCRY\t%s"
+#define LOG_LEVEL 0 //  Trace level
 
 #define AES 1
 #define TWF 2
 
 int sfs_startup() {
     const char *v = gcry_check_version(GRYPT_VERSION);
+    log_set_level(LOG_LEVEL);
 
     //  Initialize secure memory
     gcry_error_t error;
@@ -129,13 +132,19 @@ static int calculateOutputLengthNeeded(int cipherType, int length) {
     }
 
     int blockLength = gcry_cipher_get_algo_blklen(gcry_cipherType);
-    log_debug("Block length for AES=%d", blockLength);
-    int paddingNeeded = blockLength % length;
-    int outputLengthNeeded = length;
-    if(paddingNeeded != 0) {
-        log_error("Need to add %d bytes padding", paddingNeeded);
-        outputLengthNeeded += paddingNeeded;
+
+    if(LOG_LEVEL == 0) {
+        char *cipherName = "AES";
+        if(cipherType == TWF) {
+            cipherName = "TwoFish";
+        }
+        log_trace("Block length for %s=%d", cipherName, blockLength);
     }
+    double numBlocksApprox = (double)length / (double)blockLength;
+    int blockMultiplier = (int)ceil(numBlocksApprox);
+
+    int outputLengthNeeded = blockLength * blockMultiplier;
+    log_trace("Padding Needed:\torig=%d, approxBlocks=%lf, finalLen:%d", length, numBlocksApprox, outputLengthNeeded);
 
     return outputLengthNeeded;
 }
@@ -158,12 +167,11 @@ static char* doEncrypt(int cipherType, char *data, char *password, int length) {
         gcry_cipherType = GCRY_CIPHER_TWOFISH;
     }
 
-
     //  Based on code found here
     //  https://cboard.cprogramming.com/c-programming/105743-how-decrypt-encrypt-using-libgcrypt-arc4.html#post937372
     gcry_error_t error;
     char * txtBuffer = data;
-    char * encBuffer = malloc(outputLengthNeeded);
+    char * encBuffer = calloc(outputLengthNeeded, sizeof(char));
 
     //  See also https://gnupg.org/documentation/manuals/gcrypt/Working-with-cipher-handles.html#Working-with-cipher-handles
     gcry_cipher_hd_t handle;
@@ -235,14 +243,23 @@ static char* doDecrypt(int cipherType, char *cipherText, char *password, int len
     size_t keyLength = gcry_cipher_get_algo_keylen(gcry_cipherType);
 
     error = gcry_cipher_setkey(handle, key, keyLength);
+    if(error != 0) {
+        log_error("decry: setKey Error:\t%s", gcry_strerror(error));
+    }
 
     char *iv = malloc(IV_LEN);
     memcpy(iv, cipherText, IV_LEN);
     error = gcry_cipher_setiv(handle, iv, 16);
+    if(error != 0) {
+        log_error("decry: setIV Error:\t%s", gcry_strerror(error));
+    }
 
     char *cipherTextProper = &cipherText[IV_LEN];
 
     error = gcry_cipher_decrypt(handle, outBuffer, outputLengthNeeded, cipherTextProper, outputLengthNeeded);
+    if(error != 0) {
+        log_error("decry: Decrypt Error:\t%s", gcry_strerror(error));
+    }
 
     gcry_cipher_close(handle);
     free(iv);

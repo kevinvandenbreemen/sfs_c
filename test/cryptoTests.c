@@ -70,6 +70,25 @@ START_TEST(TestEncryptsPlaintextOfNonOptimalLength) {
 }
 END_TEST
 
+START_TEST(TestEncryptStringFromMemoryTest) {
+
+    char *plaintext = "HelloWorld To Encrypt";
+
+    char *cipherText = 
+        sfs_encrypt(plaintext, "one test AES keyone test AES key", strlen(plaintext));
+
+    printf("cipherText:  %s\n", cipherText);
+    sfs_bytes_debug("CipherText\n", cipherText, strlen(plaintext)+IV_LEN, 0);
+
+    printf("Decrypting Now...\n");
+    char *outBuffer = sfs_decrypt(cipherText, "one test AES keyone test AES key", strlen(plaintext));
+
+    printf("OutBuff:  %s\n", outBuffer);
+    sfs_bytes_debug("Decrypted",outBuffer, strlen(plaintext), 0);
+    fail_if(memcmp(outBuffer, plaintext, strlen(plaintext)) != 0);
+}
+END_TEST
+
 START_TEST(DoATwoFishEncrypt) {
 
     gcry_error_t error;
@@ -192,6 +211,7 @@ int main(int argc, char const *argv[])
     
 
     tcase_add_test(unhappy, TestEncryptsPlaintextOfNonOptimalLength);
+    tcase_add_test(unhappy, TestEncryptStringFromMemoryTest);
     suite_add_tcase(suite, unhappy);
 
     srunner_run_all(runner, CK_ENV);
