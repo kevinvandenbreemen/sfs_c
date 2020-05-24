@@ -24,6 +24,8 @@ This library is still under heavy development.  It should not be used for any ap
   - [Debugging bytes](#debugging-bytes)
 - [SFS Specification Basics](#sfs-specification-basics)
   - [Chunk Format](#chunk-format)
+- [Architecture](#architecture)
+  - [Overall design and layout of Headers](#overall-design-and-layout-of-headers)
 
 
 # Basic Requirements
@@ -87,3 +89,9 @@ After the 8 bytes for length the next byte must be:
 ```2```:    The "Start of Content" byte
 
 After the start of content byte must follow the chunk's payload
+
+# Architecture
+
+## Overall design and layout of Headers
+
+![](documentation/res/SFS-sfs_c.svg)
