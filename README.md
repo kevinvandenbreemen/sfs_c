@@ -11,6 +11,7 @@
     - [Memory/Performance Tests](#memoryperformance-tests)
       - [memCheck.c](#memcheckc)
 - [Debugging](#debugging)
+  - [More details](#more-details)
 - [SFS Specification Basics](#sfs-specification-basics)
   - [Chunk Format](#chunk-format)
 
@@ -50,7 +51,12 @@ Tests of internal utility functions
 A basic sanity testing program that utilizes the library.  This program should be run using a memory checking tool like [valgrind](https://valgrind.org/).
 
 # Debugging
-You can enable debugging of the library by enabling the ```SFS_DEBUG``` macro at compile time.  Simply add ```-DSFS_DEBUG``` to the gcc command line arguments in the makefile.
+You can enable debugging of the library by running ```make debugBuild```.
+
+## More details
+To enable debugging in the code you need to enable the ```SFS_DEBUG``` macro at compile time.  Simply add ```-DSFS_DEBUG``` to the gcc command line arguments in the makefile or run ```make debugBuild```.
+
+Note that if you want to add debugging to anything in the makefile (for example, the ```memCheck``` build) update the task to call the debugBuild task rather than the build task.
 
 # SFS Specification Basics
 ## Chunk Format
