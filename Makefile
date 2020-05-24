@@ -67,7 +67,7 @@ test: debugBuild
 
 	# See also https://gnupg.org/documentation/manuals/gcrypt/Building-sources.html#Building-sources regarding libgcrypt-config command
 	# and why it's needed in order for this to build
-	gcc $(GCC_FLAGS) -g $(TEST_DIR)/cryptoTests.c `libgcrypt-config --libs` -Wall -o $(TEST_EXE) $(DEP_ALL_OBJ_FILES) -lcheck -lm -lpthread -lrt  -lm -lsubunit
+	gcc $(GCC_FLAGS) -g $(TEST_DIR)/cryptoTests.c -Wall -o $(TEST_EXE) $(DEP_ALL_OBJ_FILES) $(OBJ_FILE) -lcheck -lpthread -lrt  -lm -lsubunit
 	./runTests
 
 memCheck: build

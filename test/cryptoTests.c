@@ -9,8 +9,9 @@ libgcrypt20-dev
 
 #include <gcrypt.h>
 #include <check.h>
-#include "../src/sfs_crypt_gcry.c"
-#include "../src/sfs_util.c"
+
+#include "../src/sfs_crypt.h"
+#define IV_LEN 16
 
 START_TEST(InitGCrypt) {
     fail_if(sfs_startup() != 0);
