@@ -11,7 +11,12 @@
 #define SECMEM_ALLOCATED 1000000
 #define GRYPT_VERSION "1.8.1"
 #define LOG_CTX "SFS_GCRY\t%s"
+
+#ifdef SFS_DEBUG
 #define LOG_LEVEL 0 //  Trace level
+#else
+#define LOG_LEVEL 2 //  Info or above
+#endif
 
 #define AES 1
 #define TWF 2

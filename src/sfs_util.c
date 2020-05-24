@@ -14,6 +14,10 @@ This file does not need to be exposed to code outside of the library
  * Print out 
  */
 void sfs_bytes_debug(char *message, void *data, int length, int vertical) {
+    #ifndef SFS_DEBUG
+    return;
+    #endif
+
     char *format = "[%d] ";
     if(vertical) {
         format = "[%d] \n";
