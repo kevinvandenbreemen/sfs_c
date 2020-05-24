@@ -27,9 +27,26 @@ void sfs_bytes_debug(char *message, void *data, int length, int vertical) {
 
     printf("%s\n", message);
     int i;
+    int isZeroCount = 0;
     for(i=0; i<length; i++) {
-        printf(format, tmp[i]);
+        if(tmp[i] == '\0') {
+            isZeroCount++;
+        } else {
+            if(isZeroCount >= 3){
+                printf (" ... (%d) ... ", isZeroCount);
+            }
+            isZeroCount = 0;
+        }
+
+        if(isZeroCount < 3) {
+            printf(format, tmp[i]);
+        }
     }
+
+    if(isZeroCount > 0) {
+        printf(" ...(%d) ", isZeroCount);
+    }
+
     printf("\n");
 }
 

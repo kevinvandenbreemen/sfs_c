@@ -12,6 +12,7 @@
       - [memCheck.c](#memcheckc)
 - [Debugging](#debugging)
   - [More details](#more-details)
+  - [Debugging bytes](#debugging-bytes)
 - [SFS Specification Basics](#sfs-specification-basics)
   - [Chunk Format](#chunk-format)
 
@@ -57,6 +58,15 @@ You can enable debugging of the library by running ```make debugBuild```.
 To enable debugging in the code you need to enable the ```SFS_DEBUG``` macro at compile time.  Simply add ```-DSFS_DEBUG``` to the gcc command line arguments in the makefile or run ```make debugBuild```.
 
 Note that if you want to add debugging to anything in the makefile (for example, the ```memCheck``` build) update the task to call the debugBuild task rather than the build task.
+
+## Debugging bytes
+The sfs_util.h file provides a function called ```sfs_bytes_debug```, which you can use to print out the raw unsigned numerical values of bytes.  
+
+Note that the function will skip large segments of repeated zeros and instead print the number of zeroes in parantheses, as in the example:
+
+```
+[1] [17] [0] [0]  ... (7) ... [14] [2] [116] [104] [105] [115] [32] [105] [115] [32] [97] [32] [116] [101] [115] [116] [0] [0]  ...(491495)
+```
 
 # SFS Specification Basics
 ## Chunk Format
