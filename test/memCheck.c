@@ -1,4 +1,4 @@
-#include "../src/sfs_c.h"
+#include "../src/sfs_chunkedfile.h"
 #include "../src/sfs_crypt.h"
 
 #include <string.h>

@@ -1,5 +1,5 @@
 #include <check.h>
-#include "../src/sfs_c.h"
+#include "../src/sfs_chunkedfile.h"
 #include <unistd.h>
 #include <stdio.h>
 
