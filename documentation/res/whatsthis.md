@@ -1,0 +1,1 @@
+Image resources for illustrations in documentation of the project
