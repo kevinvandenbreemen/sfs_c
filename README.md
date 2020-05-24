@@ -10,6 +10,29 @@ You'll need to have valgrind and check installed in order to run the unit and me
 # Building
 To build clone the project and type ```make```
 
+# Testing
+## Test Case Files
+
+You can test the library by typing ```make test``` to run the unit tests or ```make memCheck``` to run the memory tests.  Note that you'll need valgrind and check installed in order for this to run.
+
+### Unit Tests
+SFS_C uses the [check](https://libcheck.github.io/check/) library for unit testing.
+
+The following unit test files are available to validate your code:
+
+#### loaderTests.c
+Tests of opening and reading/writing chunks to the indexed file
+
+#### cryptoTests.c
+Tests of any implementation of the sfs_crypt.h library
+
+#### internalTests.c
+Tests of internal utility functions
+
+### Memory/Performance Tests
+#### memCheck.c
+A basic sanity testing program that utilizes the library.  This program should be run using a memory checking tool like ][valgrind](https://valgrind.org/).
+
 # SFS Specification Basics
 ## Chunk Format
 A chunk must begin with the following two control bytes:
