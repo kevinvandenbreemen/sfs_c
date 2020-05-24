@@ -1,3 +1,19 @@
+- [sfs_c](#sfs_c)
+  - [IMPORTANT](#important)
+- [Basic Requirements](#basic-requirements)
+- [Building](#building)
+- [Testing](#testing)
+  - [Test Case Files](#test-case-files)
+    - [Unit Tests](#unit-tests)
+      - [loaderTests.c](#loadertestsc)
+      - [cryptoTests.c](#cryptotestsc)
+      - [internalTests.c](#internaltestsc)
+    - [Memory/Performance Tests](#memoryperformance-tests)
+      - [memCheck.c](#memcheckc)
+- [Debugging](#debugging)
+- [SFS Specification Basics](#sfs-specification-basics)
+  - [Chunk Format](#chunk-format)
+
 # sfs_c
 A C library for reading files that use my Secure File System (chunked file) format
 
@@ -32,6 +48,9 @@ Tests of internal utility functions
 ### Memory/Performance Tests
 #### memCheck.c
 A basic sanity testing program that utilizes the library.  This program should be run using a memory checking tool like [valgrind](https://valgrind.org/).
+
+# Debugging
+You can enable debugging of the library by enabling the ```SFS_DEBUG``` macro at compile time.  Simply add ```-DSFS_DEBUG``` to the gcc command line arguments in the makefile.
 
 # SFS Specification Basics
 ## Chunk Format
