@@ -15,7 +15,15 @@ typedef struct sfs_SecureFile {
 
 } sfs_SecureFile;
 
-sfs_SecureFile *sfs_createSecureFile(char *filePath, char *password);
-sfs_SecureFile *sfs_openSecureFile(char *filePath, char *password);
+typedef enum {
+
+    noSuchFile = 1,
+    badPassword = 2,
+    incorrectPassword = 3
+
+} sfs_Error;
+
+sfs_SecureFile *sfs_createSecureFile(char *filePath, char *password, sfs_Error *error);
+sfs_SecureFile *sfs_openSecureFile(char *filePath, char *password, sfs_Error *error);
 
 #endif
