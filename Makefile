@@ -70,6 +70,9 @@ test: debugBuild
 	gcc $(GCC_FLAGS) -g $(TEST_DIR)/cryptoTests.c -Wall -o $(TEST_EXE) $(DEP_ALL_OBJ_FILES) $(OBJ_FILE) -lcheck -lpthread -lrt  -lm -lsubunit
 	./runTests
 
+	gcc $(GCC_FLAGS) $(TEST_DIR)/secureFileTests.c -Wall -o $(TEST_EXE) $(OBJ_FILE) $(DEP_ALL_OBJ_FILES)  -lcheck -lpthread -lrt -lsubunit
+	./runTests
+
 memCheck: build
 	gcc $(PERF_TEST) -Wall -g -o $(PERF_EXE) $(OBJ_COMPILE) $(DEP_ALL_OBJ_FILES) -lcheck -lpthread -lrt -lsubunit
 	@mkdir $(TEST_OUT)
