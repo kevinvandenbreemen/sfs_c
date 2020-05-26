@@ -17,9 +17,9 @@ typedef struct sfs_SecureFile {
 
 typedef enum {
 
-    noSuchFile = 0,
-    badPassword = 1,
-    incorrectPassword = 2
+    sfs_error_noSuchFile = 0,
+    sfs_error_badPassword = 1,
+    sfs_error_incorrectPassword = 2
 
 } sfs_Error;
 

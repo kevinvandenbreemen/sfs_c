@@ -12,7 +12,7 @@ sfs_SecureFile *sfs_createSecureFile(char *filePath, char *password, sfs_Error *
 
     if(strlen(password) == 0) {
         log_error("Tried to create secure file system with blank password!");
-        *error = badPassword;
+        *error = sfs_error_badPassword;
         return NULL;
     }
 
