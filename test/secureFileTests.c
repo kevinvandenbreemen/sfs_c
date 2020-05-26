@@ -1,9 +1,32 @@
 #include <check.h>
+#include <stdlib.h>
+#include <stdio.h>
 
 #include "../src/sfs_secure_file.h"
 
 START_TEST(CreateSecureFile) {
-    printf("Placeholder\n");
+    
+    char *filePath = "testOutput/createSecureFile";
+    sfs_Error *error = malloc(sizeof(sfs_Error));
+
+    sfs_SecureFile *secFile = sfs_createSecureFile(filePath, "test", error);
+    fail_if(sfs_checkError(error) != NULL);
+    fail_if(secFile == NULL);
+
+    free(error);
+
+}
+END_TEST
+
+START_TEST(PreventCreatingSecureFileWithEmptyPassword) {
+    char *filePath = "testOutput/badPassword";
+    sfs_Error *error = malloc(sizeof(sfs_Error));
+
+    sfs_SecureFile *secFile = sfs_createSecureFile(filePath, "", error);
+    fail_unless(sfs_checkError(error) != NULL, "System should not allow password with 0 characters");
+    fail_if(secFile != NULL, "System should not have created secure file");
+
+    printf("Got error:  %s\n", sfs_checkError(error));
 }
 END_TEST
 
@@ -17,6 +40,7 @@ int main(int argc, char const *argv[])
     suite_add_tcase(suite, createOpen);
     
     tcase_add_test(createOpen, CreateSecureFile);
+    tcase_add_test(createOpen, PreventCreatingSecureFileWithEmptyPassword);
 
     srunner_run_all(runner, CK_ENV);
 

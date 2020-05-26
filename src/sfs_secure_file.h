@@ -26,4 +26,10 @@ typedef enum {
 sfs_SecureFile *sfs_createSecureFile(char *filePath, char *password, sfs_Error *error);
 sfs_SecureFile *sfs_openSecureFile(char *filePath, char *password, sfs_Error *error);
 
+/**
+ * Check if there has been an error.  If so returns a value other than NULL.  Otherwise returns NULL.  The returned
+ * value is a string representing the error that has occurred
+ */
+char* sfs_checkError(sfs_Error *error);
+
 #endif
