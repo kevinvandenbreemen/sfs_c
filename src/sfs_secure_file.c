@@ -50,8 +50,13 @@ static char* errorMessages[3] = {
 };
 
 char* sfs_checkError(sfs_Error *error) {
+    
+    #ifdef SFS_DEBUG
+    log_debug("checkError -- Error = %d", *error);
+    #endif
+
     if(*error >= 1 && *error <= 3) {
-        return errorMessages[*error];
+        return errorMessages[*error - 1];
     }
     return 0;
 }
