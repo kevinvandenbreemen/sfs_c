@@ -29,7 +29,14 @@ sfs_SecureFile *sfs_createSecureFile(char *filePath, char *password, sfs_Error *
 
 sfs_SecureFile *sfs_openSecureFile(char *filePath, char *password, sfs_Error *error) {
 
-    return NULL;
+    ChunkedFile *cf = sfs_openChunkedFile(filePath);
+    sfs_SecureFile *secFile = malloc(sizeof(sfs_SecureFile));
+    secFile->chunkedFile = cf;
+    secFile->password = password;
+
+    *error = 0;
+
+    return secFile;
 
 }
 

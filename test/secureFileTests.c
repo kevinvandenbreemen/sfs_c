@@ -30,6 +30,25 @@ START_TEST(PreventCreatingSecureFileWithEmptyPassword) {
 }
 END_TEST
 
+START_TEST(LoadAnExistingSecureFileSystem) {
+
+    
+    char *filePath = "testOutput/createOpenSecureFile";
+    sfs_Error *error = malloc(sizeof(sfs_Error));
+
+    sfs_SecureFile *secFile = sfs_createSecureFile(filePath, "test", error);
+    fail_if(sfs_checkError(error) != NULL);
+
+    //  Now open the file
+
+    secFile = sfs_openSecureFile(filePath, "test", error);
+    fail_if(sfs_checkError(error) != NULL, "Error:  %s", sfs_checkError(error));
+    fail_if(secFile == NULL);
+
+
+}
+END_TEST
+
 int main(int argc, char const *argv[])
 {
     
@@ -41,6 +60,7 @@ int main(int argc, char const *argv[])
     
     tcase_add_test(createOpen, CreateSecureFile);
     tcase_add_test(createOpen, PreventCreatingSecureFileWithEmptyPassword);
+    tcase_add_test(createOpen, LoadAnExistingSecureFileSystem);
 
     srunner_run_all(runner, CK_ENV);
 
